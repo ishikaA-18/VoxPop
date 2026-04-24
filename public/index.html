@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoxPop | Your voice. Your vote. Your VoxPop.</title>
+    <meta name="description" content="AI-powered election education assistant.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#learn">Learn</a></li>
+            <li><a href="#voting-day">Voting Day</a></li>
+            <li><a href="#ask">Ask VoxPop</a></li>
+            <li><a href="#my-voxpop">My Profile</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="home">
+            <h1>VoxPop</h1>
+            <p>Your voice. Your vote. Your VoxPop.</p>
+        </section>
+        
+        <section id="learn">
+            <h2>Learn About Elections</h2>
+            <div id="quiz-container"></div>
+        </section>
+        
+        <section id="voting-day">
+            <h2>Voting Day Experience</h2>
+            <div id="evm-simulator"></div>
+        </section>
+        
+        <section id="ask">
+            <h2>Ask VoxPop Assistant</h2>
+            <div id="chat-interface"></div>
+        </section>
+        
+        <section id="my-voxpop">
+            <h2>My VoxPop</h2>
+            <div id="predictor-dashboard"></div>
+        </section>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="/js/firebase.js" type="module"></script>
+    <script src="/js/app.js" type="module"></script>
+    <script src="/js/chat.js" type="module"></script>
+    <script src="/js/quiz.js" type="module"></script>
+    <script src="/js/predictor.js" type="module"></script>
+    <script src="/js/evm.js" type="module"></script>
+</body>
+</html>

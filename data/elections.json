@@ -1,0 +1,16 @@
+{
+    "elections": [
+        {
+            "id": "ind_2024",
+            "country": "India",
+            "year": 2024,
+            "type": "General Election"
+        },
+        {
+            "id": "usa_2024",
+            "country": "USA",
+            "year": 2024,
+            "type": "Presidential Election"
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "country": "India",
+    "steps": [
+        "Register to vote",
+        "Check voter slip",
+        "Go to polling booth",
+        "Show ID",
+        "Vote on EVM"
+    ]
+}

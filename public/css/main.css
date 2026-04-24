@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #0A0F2E;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --accent-ink: #1B4FD8;
+  --accent-saffron: #FF6B00;
+  --accent-green: #138808;
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --radius: 16px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: rgba(10, 15, 46, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  padding: 1rem 2rem;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
+
+nav a {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: var(--accent-saffron);
+}
+
+section {
+  min-height: 100vh;
+  padding: 6rem 2rem 4rem; /* Top padding accounts for fixed nav */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
