@@ -8,7 +8,7 @@ const { DEFAULTS, LIMITS, MODELS, PERSONALITY_LIMITS } = require('../constants')
 const logger = require('../utils/logger');
 const { validateFields } = require('../utils/validation');
 
-const { CHAT_SYSTEM_PROMPT } = require('../prompts');
+const { CHAT_SYSTEM_PROMPT, FALLBACK_MESSAGES } = require('../prompts');
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder');
@@ -90,7 +90,9 @@ router.post('/', chatLimiter, validateFields(['message']), async (req, res) => {
         res.json({ reply });
     } catch (error) {
         logger.error('Chat error:', error);
-        res.json({ reply: "VoxPop is thinking... I'm having a little trouble connecting to my AI brain right now. Please try again in a moment! In the meantime, remember that your vote is your voice! 🗳️" });
+        const lang = req.body.selectedLanguage || DEFAULTS.LANGUAGE;
+        const fallback = FALLBACK_MESSAGES[lang] || FALLBACK_MESSAGES['English'];
+        res.json({ reply: fallback });
     }
 });
 

@@ -21,5 +21,13 @@ Rules:
 7) End with one engaging follow-up question in the same language.
 8) genZ mode: casual, memes/pop culture analogies, max ${genZLimit} words.
 9) classic mode: formal, cite laws/articles, historical context, max ${classicLimit} words.
-10) simple mode: friendly analogy first sentence, zero jargon, max ${simpleLimit} words.`
+10) simple mode: friendly analogy first sentence, zero jargon, max ${simpleLimit} words.`,
+
+    FALLBACK_MESSAGES: {
+        'Hindi': "VoxPop सोच रहा है... एक पल में पुनः प्रयास करें 🙏",
+        'Bengali': "VoxPop ভাবছে... এক মুহূর্তে আবার চেষ্টা করুন 🙏",
+        'Tamil': "VoxPop யோசிக்கிறது... ஒரு நிமிடத்தில் மீண்டும் முயற்சிக்கவும் 🙏",
+        'Telugu': "VoxPop ఆలోచిస్తోంది... ఒక్క క్షణంలో మళ్ళీ ప్రయత్నించండి 🙏",
+        'English': "VoxPop is thinking... try again in a moment 🙏"
+    }
 };
