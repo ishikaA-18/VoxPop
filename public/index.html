@@ -1,60 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoxPop | Your voice. Your vote. Your VoxPop.</title>
     <meta name="description" content="AI-powered election education assistant.">
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/components.css">
     <link rel="stylesheet" href="/css/animations.css">
 </head>
+
 <body>
-    <nav>
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#learn">Learn</a></li>
-            <li><a href="#voting-day">Voting Day</a></li>
-            <li><a href="#ask">Ask VoxPop</a></li>
-            <li><a href="#my-voxpop">My Profile</a></li>
-        </ul>
+    <nav aria-label="Main Navigation">
+        <div class="nav-container">
+            <a href="#home" class="logo" aria-label="VoxPop Home">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span class="logo-text">VoxPop</span>
+            </a>
+
+            <button class="hamburger-menu" aria-label="Open Menu" aria-expanded="false" aria-controls="nav-menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <ul id="nav-menu" class="nav-links">
+                <li><a href="#learn" aria-label="Learn about the election process">Learn</a></li>
+                <li><a href="#voting-day" aria-label="Guide for voting day">Voting Day</a></li>
+                <li><a href="#ask" aria-label="Ask VoxPop AI assistant">Ask VoxPop</a></li>
+                <li><a href="#my-voxpop" aria-label="My quiz results and badges">My VoxPop</a></li>
+            </ul>
+        </div>
     </nav>
 
     <main>
-        <section id="home">
-            <h1>VoxPop</h1>
-            <p>Your voice. Your vote. Your VoxPop.</p>
+        <section id="home" class="hero-section">
+            <div class="particle-background" aria-hidden="true"></div>
+
+            <div class="hero-content">
+                <h1 class="hero-title" id="hero-title">Your voice. Your vote. Your VoxPop.</h1>
+                <p class="hero-subtitle" id="hero-subtitle">The friendly guide every first-time voter deserves.</p>
+                <p class="hero-secondary" id="hero-secondary" lang="bn">কোনো ভোটার যেন বাদ না পড়েন — No voter should be
+                    left behind.</p>
+
+                <div class="selectors-container">
+                    <div class="selector-group">
+                        <label for="language-select" class="visually-hidden">Choose your language</label>
+                        <span class="flag-icon" aria-hidden="true" id="language-flag">🇮🇳</span>
+                        <select id="language-select" aria-label="Choose your language">
+                            <option value="en" selected>English</option>
+                            <option value="hi">Hindi (हिन्दी)</option>
+                            <option value="bn">Bengali (বাংলা)</option>
+                            <option value="te">Telugu (తెలుగు)</option>
+                            <option value="mr">Marathi (मराठी)</option>
+                            <option value="ta">Tamil (தமிழ்)</option>
+                            <option value="ur">Urdu (اردو)</option>
+                            <option value="gu">Gujarati (ગુજરાતી)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="or">Odia (ଓଡ଼ିଆ)</option>
+                            <option value="ml">Malayalam (മലയാളം)</option>
+                            <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                            <option value="as">Assamese (অসমীয়া)</option>
+                            <option value="mai">Maithili (मैथिली)</option>
+                            <option value="sa">Sanskrit (संस्कृतम्)</option>
+                            <option value="sat">Santali (ᱥᱟᱱᱛᱟᱲᱤ)</option>
+                            <option value="ks">Kashmiri (कॉशुर)</option>
+                            <option value="ne">Nepali (नेपाली)</option>
+                            <option value="sd">Sindhi (सिन्धी)</option>
+                            <option value="kok">Konkani (कोंकणी)</option>
+                            <option value="dgo">Dogri (डोगरी)</option>
+                            <option value="brx">Bodo (बड़ो)</option>
+                        </select>
+                    </div>
+
+                    <div class="selector-group">
+                        <label for="country-select" class="visually-hidden">Choose your country</label>
+                        <select id="country-select" aria-label="Choose your country">
+                            <option value="in" selected>India</option>
+                            <option value="us">USA</option>
+                            <option value="uk">UK</option>
+                            <option value="au">Australia</option>
+                            <option value="ca">Canada</option>
+                            <option value="fr">France</option>
+                            <option value="de">Germany</option>
+                            <option value="bd">Bangladesh</option>
+                        </select>
+                    </div>
+
+                    <div class="selector-group" id="election-type-group">
+                        <label for="election-select" class="visually-hidden">Choose election type</label>
+                        <select id="election-select" aria-label="Choose election type">
+                            <option value="lok-sabha">Lok Sabha</option>
+                            <option value="state-assembly">State Assembly</option>
+                            <option value="presidential">Presidential</option>
+                            <option value="municipal">Municipal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary cta-btn" aria-label="Start My Journey">Start My Journey &rarr;</button>
+            </div>
+
+            <div class="feature-cards-container">
+                <div class="glass-card feature-card">
+                    <span class="card-icon" aria-hidden="true">🗳️</span>
+                    <h3 id="card-1-title">Learn the Process</h3>
+                    <p id="card-1-desc">Step by step from registration to results.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <span class="card-icon" aria-hidden="true">🤖</span>
+                    <h3 id="card-2-title">Ask VoxPop</h3>
+                    <p id="card-2-desc">Get instant AI answers in your style and language.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <span class="card-icon" aria-hidden="true">📅</span>
+                    <h3 id="card-3-title">Know Your Next Vote</h3>
+                    <p id="card-3-desc">Find out when you can vote next.</p>
+                </div>
+            </div>
         </section>
-        
-        <section id="learn">
-            <h2>Learn About Elections</h2>
-            <div id="quiz-container"></div>
+
+        <section id="learn" class="timeline-section">
+            <h2 id="learn-title" class="section-title">Learn About Elections</h2>
+            <p id="learn-subtitle" class="section-subtitle">Your step-by-step guide to democracy.</p>
+
+            <div class="timeline-container" role="list" aria-label="Election Process Timeline">
+                <div class="timeline-line" aria-hidden="true"></div>
+
+                <!-- Step 1 -->
+                <div class="timeline-item" role="listitem">
+                    <div class="timeline-dot" aria-hidden="true"></div>
+                    <div class="glass-card timeline-card">
+                        <span class="step-number">1</span>
+                        <h3 id="step-1-title" class="step-title"><span aria-hidden="true">🏛️</span> What is an
+                            election?</h3>
+                        <p id="step-1-desc" class="step-desc">How democracy works, why your vote matters.</p>
+                        <button class="btn btn-primary step-btn" data-topic="What is an election?"
+                            aria-label="Tell me more about what is an election"><span id="step-1-btn">Tell me more
+                                &rarr;</span></button>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="timeline-item" role="listitem">
+                    <div class="timeline-dot" aria-hidden="true"></div>
+                    <div class="glass-card timeline-card">
+                        <span class="step-number">2</span>
+                        <h3 id="step-2-title" class="step-title"><span aria-hidden="true">✅</span> Who can vote?</h3>
+                        <p id="step-2-desc" class="step-desc">Age 18+, Indian citizen, registered voter.</p>
+                        <button class="btn btn-primary step-btn" data-topic="Who can vote in India?"
+                            aria-label="Tell me more about who can vote"><span id="step-2-btn">Tell me more
+                                &rarr;</span></button>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="timeline-item" role="listitem">
+                    <div class="timeline-dot" aria-hidden="true"></div>
+                    <div class="glass-card timeline-card">
+                        <span class="step-number">3</span>
+                        <h3 id="step-3-title" class="step-title"><span aria-hidden="true">📝</span> How to register?
+                        </h3>
+                        <p id="step-3-desc" class="step-desc">Voter ID, Form 6, online at voters.eci.gov.in.</p>
+                        <button class="btn btn-primary step-btn" data-topic="How to register to vote in India?"
+                            aria-label="Tell me more about how to register"><span id="step-3-btn">Tell me more
+                                &rarr;</span></button>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="timeline-item" role="listitem">
+                    <div class="timeline-dot" aria-hidden="true"></div>
+                    <div class="glass-card timeline-card">
+                        <span class="step-number">4</span>
+                        <h3 id="step-4-title" class="step-title"><span aria-hidden="true">🗓️</span> Election phases &
+                            timelines</h3>
+                        <p id="step-4-desc" class="step-desc">How India conducts phased elections.</p>
+                        <button class="btn btn-primary step-btn" data-topic="How are election phases conducted?"
+                            aria-label="Tell me more about election phases"><span id="step-4-btn">Tell me more
+                                &rarr;</span></button>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="timeline-item" role="listitem">
+                    <div class="timeline-dot" aria-hidden="true"></div>
+                    <div class="glass-card timeline-card">
+                        <span class="step-number">5</span>
+                        <h3 id="step-5-title" class="step-title"><span aria-hidden="true">🏫</span> Voting day process
+                        </h3>
+                        <p id="step-5-desc" class="step-desc">From arriving at booth to casting vote.</p>
+                        <button class="btn btn-primary step-btn" data-topic="What is the voting day process?"
+                            aria-label="Tell me more about voting day process"><span id="step-5-btn">Tell me more
+                                &rarr;</span></button>
+                    </div>
+                </div>
+
+                <!-- Step 6 -->
+                <div class="timeline-item" role="listitem">
+                    <div class="timeline-dot" aria-hidden="true"></div>
+                    <div class="glass-card timeline-card">
+                        <span class="step-number">6</span>
+                        <h3 id="step-6-title" class="step-title"><span aria-hidden="true">🖥️</span> How votes are
+                            counted</h3>
+                        <p id="step-6-desc" class="step-desc">EVM tallying, VVPAT cross-check, results.</p>
+                        <button class="btn btn-primary step-btn" data-topic="How are votes counted using EVM and VVPAT?"
+                            aria-label="Tell me more about vote counting"><span id="step-6-btn">Tell me more
+                                &rarr;</span></button>
+                    </div>
+                </div>
+
+                <!-- Step 7 -->
+                <div class="timeline-item" role="listitem">
+                    <div class="timeline-dot" aria-hidden="true"></div>
+                    <div class="glass-card timeline-card">
+                        <span class="step-number">7</span>
+                        <h3 id="step-7-title" class="step-title"><span aria-hidden="true">🏆</span> Results & what
+                            happens next</h3>
+                        <p id="step-7-desc" class="step-desc">Winner announcement, government formation.</p>
+                        <button class="btn btn-primary step-btn" data-topic="What happens after election results?"
+                            aria-label="Tell me more about what happens next"><span id="step-7-btn">Tell me more
+                                &rarr;</span></button>
+                    </div>
+                </div>
+
+            </div>
         </section>
-        
-        <section id="voting-day">
-            <h2>Voting Day Experience</h2>
-            <div id="evm-simulator"></div>
+
+        <section id="voting-day" class="section-container">
+            <h2 id="vd-title" class="section-title">Voting Day Experience</h2>
+
+            <!-- Component 1: Booth Guide -->
+            <h3 id="vd-guide-title" class="subsection-title">Step by Step Booth Guide</h3>
+            <div class="booth-guide-container">
+                <div class="glass-card booth-card">
+                    <div class="booth-step-num">1</div>
+                    <h4 id="bg-1-title"><span aria-hidden="true">🧾</span> Check your name & booth</h4>
+                    <p id="bg-1-desc">Confirm name on Electoral Roll at voters.eci.gov.in or call 1950. Use Voter
+                        Helpline App Booth Navigator for GPS directions.</p>
+                </div>
+                <div class="glass-card booth-card">
+                    <div class="booth-step-num">2</div>
+                    <h4 id="bg-2-title"><span aria-hidden="true">🧍</span> Stand in queue orderly</h4>
+                    <p id="bg-2-desc">Separate queues exist for senior citizens and differently-abled voters.</p>
+                </div>
+                <div class="glass-card booth-card">
+                    <div class="booth-step-num">3</div>
+                    <h4 id="bg-3-title"><span aria-hidden="true">✅</span> Identity verification</h4>
+                    <p id="bg-3-desc">Polling Officer checks your name in voter list + verifies ID.</p>
+                </div>
+                <div class="glass-card booth-card">
+                    <div class="booth-step-num">4</div>
+                    <h4 id="bg-4-title"><span aria-hidden="true">☝️</span> Ink mark + ticket + signature</h4>
+                    <p id="bg-4-desc">Indelible ink on LEFT hand finger, receive ticket, give signature.</p>
+                </div>
+                <div class="glass-card booth-card">
+                    <div class="booth-step-num">5</div>
+                    <h4 id="bg-5-title"><span aria-hidden="true">🚪</span> Enter voting compartment</h4>
+                    <p id="bg-5-desc">Hand over ticket, Presiding Officer activates Ballot Unit, you enter alone —
+                        completely private.</p>
+                </div>
+                <div class="glass-card booth-card">
+                    <div class="booth-step-num">6</div>
+                    <h4 id="bg-6-title"><span aria-hidden="true">🔵</span> Press the BLUE button</h4>
+                    <p id="bg-6-desc">Press the blue button next to your chosen candidate's name and symbol.</p>
+                </div>
+                <div class="glass-card booth-card">
+                    <div class="booth-step-num">7</div>
+                    <h4 id="bg-7-title"><span aria-hidden="true">🔴</span> RED light + BEEP</h4>
+                    <p id="bg-7-desc">A red light glows and a beep sounds confirming your vote. If NO light or beep →
+                        immediately inform the Presiding Officer.</p>
+                </div>
+                <div class="glass-card booth-card">
+                    <div class="booth-step-num">8</div>
+                    <h4 id="bg-8-title"><span aria-hidden="true">🧾</span> Verify on VVPAT</h4>
+                    <p id="bg-8-desc">Slip shows candidate name, symbol and number for exactly 7 seconds. Slip is NOT
+                        given to you — it auto-drops into a sealed box.</p>
+                </div>
+            </div>
+            <p id="bg-nota-note" class="nota-note">Note: "NOTA (None Of The Above) is always the LAST option on the
+                EVM."</p>
+
+            <!-- Component 2: EVM Simulator -->
+            <div id="evm-simulator-wrapper" class="evm-section">
+                <h3 id="evm-title" class="subsection-title">Try it yourself — this is exactly how it works at the booth
+                    🗳️</h3>
+                <p id="evm-subtitle" class="section-subtitle">In the real EVM, a RED light glows and a beep confirms
+                    your vote</p>
+
+                <div class="evm-container">
+                    <!-- Ballot Unit -->
+                    <div class="evm-ballot-unit">
+                        <div class="evm-header">BALLOT UNIT</div>
+                        <div class="evm-candidates" id="evm-candidates">
+                            <!-- Generated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- VVPAT -->
+                    <div class="evm-vvpat">
+                        <div class="vvpat-header">VVPAT</div>
+                        <div class="vvpat-window">
+                            <div class="vvpat-slip" id="vvpat-slip">
+                                <div id="slip-serial" class="slip-serial"></div>
+                                <div id="slip-symbol" class="slip-symbol"></div>
+                                <div id="slip-name" class="slip-name"></div>
+                            </div>
+                        </div>
+                        <div class="vvpat-status" id="vvpat-status">Ready</div>
+                        <p id="vvpat-note" class="vvpat-note">This slip is NOT given to you — it drops into a sealed box
+                            automatically</p>
+                    </div>
+                </div>
+                <button id="evm-reset-btn" class="btn btn-primary" aria-label="Reset EVM">Reset Simulator</button>
+            </div>
+
+            <!-- Component 3: Queue Time Estimator & Informational Modules -->
+            <div class="grid-2-col">
+                <div class="glass-card queue-card">
+                    <h3 id="queue-title">Queue Time Estimator ⏱️</h3>
+                    <div class="input-group">
+                        <label for="booth-voters" id="label-voters">How many voters are registered at your
+                            booth?</label>
+                        <input type="number" id="booth-voters" value="800" min="100" max="2000" class="vox-input">
+                    </div>
+                    <div class="input-group">
+                        <label for="visit-time" id="label-time">What time are you planning to go?</label>
+                        <input type="time" id="visit-time" value="10:00" class="vox-input">
+                    </div>
+                    <button id="calc-queue-btn" class="btn btn-primary cta-btn">Calculate Wait Time</button>
+                    <div id="queue-result" class="queue-result" aria-live="polite">
+                        <!-- Result injected here -->
+                    </div>
+                </div>
+
+                <div class="info-modules">
+                    <!-- Component 4: Trust Module -->
+                    <div class="glass-card trust-module">
+                        <div class="trust-icon" aria-hidden="true">🔒</div>
+                        <h3 id="trust-title">Will anyone know how I voted?</h3>
+                        <p id="trust-desc">EVM records only a number — not your name, face, or ID. Protected by the
+                            Representation of the People Act, 1951. Even the President of India's vote cannot be traced.
+                        </p>
+                        <p id="trust-highlight" class="trust-highlight">Your vote is 100% anonymous — always.</p>
+                        <p id="trust-help" class="trust-help">Feeling threatened? Call Election Commission Helpline:
+                            1950</p>
+                    </div>
+
+                    <!-- Component 5: EPIC Number Explainer -->
+                    <div class="glass-card epic-module">
+                        <h3 id="epic-title">🪪 What is your EPIC Number?</h3>
+                        <p id="epic-desc">EPIC = Elector's Photo Identity Card — unique ID on your Voter ID card.</p>
+                        <ul id="epic-list">
+                            <li>Find your Assembly Constituency and Polling Station</li>
+                            <li>Search your name in Electoral Roll</li>
+                            <li>Know your Polling Officials (DEO, ERO, BLO)</li>
+                            <li>Apply for Voter ID correction</li>
+                            <li>Apply for shifting within constituency</li>
+                        </ul>
+                        <a href="https://voters.eci.gov.in" target="_blank" class="btn btn-primary epic-btn"
+                            id="epic-btn">Check yours at voters.eci.gov.in &rarr;</a>
+                    </div>
+                </div>
+            </div>
         </section>
-        
-        <section id="ask">
-            <h2>Ask VoxPop Assistant</h2>
-            <div id="chat-interface"></div>
+
+        <section id="ask" class="section-container">
         </section>
-        
-        <section id="my-voxpop">
-            <h2>My VoxPop</h2>
-            <div id="predictor-dashboard"></div>
+
+        <section id="my-voxpop" class="section-container">
         </section>
     </main>
 
     <!-- JavaScript -->
     <script src="/js/firebase.js" type="module"></script>
     <script src="/js/app.js" type="module"></script>
-    <script src="/js/chat.js" type="module"></script>
+    <script src="/js/chat.js" defer></script>
     <script src="/js/quiz.js" type="module"></script>
     <script src="/js/predictor.js" type="module"></script>
     <script src="/js/evm.js" type="module"></script>
 </body>
+
 </html>
