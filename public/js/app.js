@@ -35,6 +35,16 @@ const translations = {
         step7Desc: "Winner announcement, government formation.",
         tellMeMore: "Tell me more &rarr;",
 
+        // Predictor
+        predictTitle: "When's My First Vote? 🗳️",
+        predictSub: "Find out when you can next exercise your democratic right.",
+        countryLabel: "Country",
+        stateLabel: "State / Province",
+        electionLabel: "Election Type",
+        dobLabel: "Date of Birth",
+        predictBtn: "Predict My Next Vote",
+        statePlaceholder: "e.g. West Bengal",
+
         // Chat
         askHeading: "Ask VoxPop 🎙️",
         askSub: "Ask anything about elections. No judgment, no jargon.",
@@ -131,6 +141,16 @@ const translations = {
         step7Title: "🏆 परिणाम और आगे क्या होता है",
         step7Desc: "विजेता की घोषणा, सरकार का गठन।",
         tellMeMore: "मुझे और बताएं &rarr;",
+
+        // Predictor
+        predictTitle: "मेरा पहला वोट कब है? 🗳️",
+        predictSub: "जानें कि आप अगली बार अपना लोकतांत्रिक अधिकार कब प्रयोग कर सकते हैं।",
+        countryLabel: "देश",
+        stateLabel: "राज्य / प्रांत",
+        electionLabel: "चुनाव प्रकार",
+        dobLabel: "जन्म तिथि",
+        predictBtn: "मेरा वोट खोजें",
+        statePlaceholder: "जैसे पश्चिम बंगाल",
 
         // Chat
         askHeading: "VoxPop से पूछें 🎙️",
@@ -229,6 +249,16 @@ const translations = {
         step7Desc: "বিজয়ীর ঘোষণা, সরকার গঠন।",
         tellMeMore: "আমাকে আরও বলুন &rarr;",
 
+        // Predictor
+        predictTitle: "আমার প্রথম ভোট কবে? 🗳️",
+        predictSub: "আপনি পরবর্তী কবে ভোট দিতে পারবেন তা জানুন।",
+        countryLabel: "দেশ",
+        stateLabel: "রাজ্য",
+        electionLabel: "নির্বাচনের ধরণ",
+        dobLabel: "জন্ম তারিখ",
+        predictBtn: "আমার ভোট খুঁজুন",
+        statePlaceholder: "যেমন পশ্চিমবঙ্গ",
+
         // Chat
         askHeading: "VoxPop কে জিজ্ঞাসা করুন 🎙️",
         askSub: "নির্বাচন সম্পর্কে যেকোনো কিছু জিজ্ঞাসা করুন।",
@@ -270,7 +300,7 @@ const translations = {
         bg3Desc: "পোলিং অফিসার আপনার নাম এবং আইডি যাচাই করবেন।",
         bg4Title: "☝️ কালি + টিকিট + স্বাক্ষর",
         bg4Desc: "বাম হাতের আঙুলে কালি, টিকিট গ্রহণ, স্বাক্ষর করুন।",
-        bg5Title: "🚪 ভোটিং কম্পার্টমেন্টে প্রবেশ",
+        bg5Title: "🚪 ভোটিং কম্পार्टमेंटে প্রবেশ",
         bg5Desc: "টিকিট দিন, আপনি একা প্রবেশ করবেন।",
         bg6Title: "🔵 নীল বোতাম টিপুন",
         bg6Desc: "আপনার প্রার্থীর পাশের নীল বোতামটি টিপুন।",
@@ -304,6 +334,17 @@ const translations = {
         card1Title: "செயல்முறையை அறியுங்கள்",
         card2Title: "VoxPop-விடம் கேளுங்கள்",
         card3Title: "உங்கள் அடுத்த வாக்கை அறியுங்கள்",
+
+        // Predictor
+        predictTitle: "எனது முதல் வாக்கு எப்போது? 🗳️",
+        predictSub: "உங்கள் ஜனநாயக உரிமையை எப்போது பயன்படுத்தலாம் என்பதைக் கண்டறியவும்.",
+        countryLabel: "நாடு",
+        stateLabel: "மாநிலம் / மாகாணம்",
+        electionLabel: "தேர்தல் வகை",
+        dobLabel: "பிறந்த தேதி",
+        predictBtn: "எனது வாக்கைக் கண்டுபிடி",
+        statePlaceholder: "உதாரணமாக: தமிழ்நாடு",
+
         askHeading: "VoxPop-விடம் கேளுங்கள் 🎙️",
         myHeading: "எனது VoxPop 🏆",
         quizComplete: "வினாடி வினா முடிந்தது! 🎉",
@@ -334,6 +375,17 @@ const translations = {
         card1Title: "ప్రక్రియను తెలుసుకోండి",
         card2Title: "VoxPop ని అడగండి",
         card3Title: "మీ తదుపరి ఓటును తెలుసుకోండి",
+
+        // Predictor
+        predictTitle: "నా మొదటి ఓటు ఎప్పుడు? 🗳️",
+        predictSub: "మీరు తదుపరి ఎప్పుడు ఓటు వేయవచ్చో తెలుసుకోండి.",
+        countryLabel: "దేశం",
+        stateLabel: "రాష్ట్రం / ప్రాంతం",
+        electionLabel: "ఎన్నికల రకం",
+        dobLabel: "పుట్టిన తేదీ",
+        predictBtn: "నా ఓటును కనుగొనండి",
+        statePlaceholder: "ఉదాహరణకు: ఆంధ్రప్రదేశ్",
+
         askHeading: "VoxPop ని అడగండి 🎙️",
         myHeading: "నా VoxPop 🏆",
         quizComplete: "క్విజ్ పూర్తయింది! 🎉",
@@ -364,6 +416,17 @@ const translations = {
         card1Title: "प्रक्रिया जाणून घ्या",
         card2Title: "VoxPop ला विचारा",
         card3Title: "तुमचे पुढचे मत जाणून घ्या",
+
+        // Predictor
+        predictTitle: "माझे पहिले मत कधी आहे? 🗳️",
+        predictSub: "तुम्ही पुढच्या वेळी कधी मतदान करू शकता हे जाणून घ्या.",
+        countryLabel: "देश",
+        stateLabel: "राज्य / प्रांत",
+        electionLabel: "निवडणुकीचा प्रकार",
+        dobLabel: "जन्म तारीख",
+        predictBtn: "माझे मत शोधा",
+        statePlaceholder: "उदा. महाराष्ट्र",
+
         askHeading: "VoxPop ला विचारा 🎙️",
         myHeading: "माझे VoxPop 🏆",
         quizComplete: "क्विझ पूर्ण! 🎉",
@@ -527,14 +590,14 @@ const translations = {
         modeGenZDesc: "ଛୋଟ ଏବଂ ମଜାଦାର",
         modeClassicDesc: "ଗଭୀର ଭାବରେ ଜାଣନ୍ତୁ",
         prompt1: "ମୁଁ ଘରକୁ ଯିବା ପାଇଁ ଭୋଟ୍ କେବେ ଶେଷ ହେବ? 😅",
-        prompt2: "ମୁଁ କେଉଁ ଦଳକୁ ଭୋଟ୍ ଦେଲି କେହି ଜାଣିବେ କି?",
+        prompt2: "ମୁଁ କେଉଁ ଦଳକୁ ଭୋਟ୍ ଦେଲି କେହି ଜାଣିବେ କି?",
         prompt3: "କେବଳ ବଟନ୍ ଦବାଇ ଭୋଟ୍ କିପରି ଗଣନା କରାଯାଏ?",
         prompt4: "ମୁଁ ପୋଲିଂ ବୁଥକୁ କ’ଣ ଆଣିବି?",
-        prompt5: "ଯଦି ଭୋଟର ତାଲିକାରେ ମୋ ନାମ ନାହିଁ ତେବେ କ’ଣ ହେବ?",
-        startJourney: "ମୋର ଯାତ୍ରା ଆରମ୍ଭ କରନ୍ତୁ",
+        prompt5: "ଯଦି ଭୋଟର ତାଲିକାରେ ମୋ ନାମ ନାହିଁ ତେବે କ’ଣ ହେବ?",
+        startJourney: "ମୋର ଯାତ୍ରା ଆਰମ୍ଭ କରନ୍ତୁ",
         chatWelcome: "ନମସ୍କାର! ମୁଁ VoxPop 👋 ମୁଁ ଆପଣଙ୍କର ନିର୍ବାଚନ ସମ୍ବନ୍ଧୀୟ ପ୍ରଶ୍ନର ଉତ୍ତର ଦେବାକୁ ଏଠାରେ ଅଛି। ଆପଣ କ’ଣ ଜାଣିବାକୁ ଚାହାଁନ୍ତି?",
         chatPlaceholder: "ଭୋଟ୍ ବିଷୟରେ କିଛି ବି ପଚାରନ୍ତୁ...",
-        learnTitle: "ନିର୍ବାଚନ ବିଷୟରେ ଶିଖନ୍ତୁ",
+        learnTitle: "ନିର୍ବାਚନ ବିଷୟରେ ଶିଖନ୍ତୁ",
         vdTitle: "ଭୋଟ୍ ଦିନର ଅଭିଜ୍ଞତା"
     }
 };
@@ -769,7 +832,16 @@ function updateLanguage(lang) {
         'quiz-intro-title': t.quizIntroTitle,
         'quiz-intro-desc': t.quizIntroDesc,
         'quiz-complete-title': t.quizComplete,
-        'download-badge-btn': t.downloadBadge
+        'download-badge-btn': t.downloadBadge,
+
+        // Predictor Module Elements (if exist)
+        'predict-title': t.predictTitle,
+        'predict-sub': t.predictSub,
+        'label-country': t.countryLabel,
+        'label-state': t.stateLabel,
+        'label-election': t.electionLabel,
+        'label-dob': t.dobLabel,
+        'predict-btn': t.predictBtn
     };
 
     for (const [id, text] of Object.entries(elements)) {
@@ -784,6 +856,9 @@ function updateLanguage(lang) {
 
     const chatInput = document.getElementById('chatInput');
     if (chatInput && t.chatPlaceholder) chatInput.placeholder = t.chatPlaceholder;
+
+    const stateInput = document.getElementById('predict-state');
+    if (stateInput && t.statePlaceholder) stateInput.placeholder = t.statePlaceholder;
 
     for (let i = 1; i <= 7; i++) {
         const btn = document.getElementById(`step-${i}-btn`);

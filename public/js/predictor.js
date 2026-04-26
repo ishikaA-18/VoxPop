@@ -34,24 +34,24 @@ const predictorModule = (() => {
         predictorDiv.className = 'predictor-wrapper';
         predictorDiv.innerHTML = `
             <div class="glass-card predictor-card">
-                <h3>When's My First Vote? 🗳️</h3>
-                <p>Find out when you can next exercise your democratic right.</p>
+                <h3 id="predict-title">When's My First Vote? 🗳️</h3>
+                <p id="predict-sub">Find out when you can next exercise your democratic right.</p>
 
                 <div class="predictor-form">
                     <div class="input-row">
                         <div class="input-group">
-                            <label for="predict-country">Country</label>
+                            <label for="predict-country" id="label-country">Country</label>
                             <input type="text" id="predict-country" placeholder="e.g. India" value="India">
                         </div>
                         <div class="input-group">
-                            <label for="predict-state">State / Province</label>
+                            <label for="predict-state" id="label-state">State / Province</label>
                             <input type="text" id="predict-state" placeholder="e.g. West Bengal">
                         </div>
                     </div>
                     
                     <div class="input-row">
                         <div class="input-group">
-                            <label for="predict-election">Election Type</label>
+                            <label for="predict-election" id="label-election">Election Type</label>
                             <select id="predict-election">
                                 <option value="General Election">General Election / Lok Sabha</option>
                                 <option value="State Assembly">State Assembly</option>
@@ -60,7 +60,7 @@ const predictorModule = (() => {
                             </select>
                         </div>
                         <div class="input-group">
-                            <label for="predict-dob">Date of Birth</label>
+                            <label for="predict-dob" id="label-dob">Date of Birth</label>
                             <input type="date" id="predict-dob">
                         </div>
                     </div>
