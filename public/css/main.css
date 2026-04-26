@@ -283,8 +283,6 @@ section {
   position: relative;
   margin-bottom: 3rem;
   width: 100%;
-  opacity: 0; /* for animation */
-  transform: translateX(-50px);
 }
 
 .timeline-dot {

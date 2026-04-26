@@ -246,11 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Country selection logic to toggle election type dropdown
-    const country-select = document.getElementById('country-select');
+    const countrySelect = document.getElementById('country-select');
     const electionGroup = document.getElementById('election-type-group');
 
-    if (country - select) {
-        country - select.addEventListener('change', (e) => {
+    if (countrySelect) {
+        countrySelect.addEventListener('change', (e) => {
             if (e.target.value === 'in') {
                 electionGroup.style.display = 'flex';
             } else {
@@ -259,12 +259,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // "Start My Journey" Button Smooth Scroll
+    document.querySelector('.cta-btn')?.addEventListener('click', () => {
+        document.getElementById('learn')?.scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+
     // Timeline Intersection Observer
     const timelineItems = document.querySelectorAll('.timeline-item');
     const observerOptions = {
         root: null,
-        rootMargin: '0px',
-        threshold: 0.5 // Trigger when 50% of the item is visible
+        rootMargin: '0px 0px -10% 0px',
+        threshold: 0.15 // Trigger when 15% of the item is visible
     };
 
     const observer = new IntersectionObserver((entries, observer) => {
@@ -300,6 +307,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }, observerOptions);
 
     timelineItems.forEach(item => {
+        // Initially set opacity to 0 via JS so they can animate in
+        // but remain visible if JS fails (since CSS opacity is now 1)
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-50px)';
         observer.observe(item);
     });
 
@@ -309,10 +320,20 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             const topic = btn.getAttribute('data-topic');
             console.log("Navigating to Ask VoxPop with topic:", topic);
-            window.location.hash = '#ask';
-            // Placeholder: pre-fill chat input with topic
-            // const chatInput = document.getElementById('chat-input');
-            // if (chatInput) chatInput.value = "Tell me more about: " + topic;
+
+            // Scroll to chat section
+            document.getElementById('ask')?.scrollIntoView({
+                behavior: 'smooth'
+            });
+
+            // Pre-fill chat input
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.value = "Tell me more about: " + topic;
+                // Trigger input event to update char counter and resize
+                chatInput.dispatchEvent(new Event('input'));
+                chatInput.focus();
+            }
         });
     });
 });
