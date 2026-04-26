@@ -37,13 +37,13 @@ const quizModule = (() => {
 
         section.innerHTML = `
             <div class="section-inner">
-                <h2 class="section-title">My VoxPop 🏆</h2>
-                <p class="section-sub">Test your knowledge and earn your Civic Badge.</p>
+                <h2 class="section-title" id="quiz-section-title">My VoxPop 🏆</h2>
+                <p class="section-sub" id="quiz-section-sub">Test your knowledge and earn your Civic Badge.</p>
 
                 <div id="quiz-container" class="glass-card quiz-card">
                     <div id="quiz-intro">
-                        <h3>Are you an Election Expert? 🗳️</h3>
-                        <p>Take a quick 5-question quiz based on your selected country and election type.</p>
+                        <h3 id="quiz-intro-title">Are you an Election Expert? 🗳️</h3>
+                        <p id="quiz-intro-desc">Take a quick 5-question quiz based on your selected country and election type.</p>
                         <button id="start-quiz-btn" class="btn btn-primary cta-btn">Start Quiz</button>
                     </div>
                     <div id="quiz-content" style="display: none;">
@@ -57,7 +57,7 @@ const quizModule = (() => {
                         <button id="next-question-btn" class="btn btn-primary" style="display: none;">Next Question</button>
                     </div>
                     <div id="quiz-results" style="display: none;">
-                        <h3>Quiz Complete! 🎉</h3>
+                        <h3 id="quiz-complete-title">Quiz Complete! 🎉</h3>
                         <div class="score-display">
                             <span id="final-score">0</span>/5
                         </div>
@@ -225,13 +225,13 @@ const quizModule = (() => {
         let msgText = '';
 
         if (score === 5) {
-            titleText = 'Election Expert 🏆';
+            titleText = window.voxpopGetTranslation ? window.voxpopGetTranslation('expert') : 'Election Expert 🏆';
             msgText = 'Incredible! You have a perfect understanding of the democratic process.';
         } else if (score >= 3) {
-            titleText = 'Civic Champion 🎖️';
+            titleText = window.voxpopGetTranslation ? window.voxpopGetTranslation('champion') : 'Civic Champion 🎖️';
             msgText = 'Great job! You\'re well-informed and ready to cast your vote.';
         } else {
-            titleText = 'Future Voter 🌱';
+            titleText = window.voxpopGetTranslation ? window.voxpopGetTranslation('voter') : 'Future Voter 🌱';
             msgText = 'Good start! Democracy is a journey, keep learning.';
         }
 

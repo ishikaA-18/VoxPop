@@ -46,32 +46,32 @@ const chatModule = (() => {
 
         section.innerHTML = `
       <div class="section-inner">
-        <h2 class="section-title">Ask VoxPop 🎙️</h2>
-        <p class="section-sub">Ask anything about elections. No judgment, no jargon.</p>
+        <h2 class="section-title" id="chat-section-title">Ask VoxPop 🎙️</h2>
+        <p class="section-sub" id="chat-section-sub">Ask anything about elections. No judgment, no jargon.</p>
 
         <!-- Personality Mode Toggle -->
         <div class="mode-toggle" role="tablist" aria-label="Choose response style">
           <button class="mode-btn active" role="tab" aria-selected="true"
             data-mode="simple" aria-label="Simple mode - easy explanations">
-            😊 Simple
-            <span class="mode-desc">Keep It Easy</span>
+            <span id="mode-simple-label">😊 Simple</span>
+            <span class="mode-desc" id="mode-simple-desc">Keep It Easy</span>
           </button>
           <button class="mode-btn" role="tab" aria-selected="false"
             data-mode="genZ" aria-label="Gen Z mode - casual and fun">
-            ⚡ Gen Z
-            <span class="mode-desc">Short & Spicy</span>
+            <span id="mode-genZ-label">⚡ Gen Z</span>
+            <span class="mode-desc" id="mode-genZ-desc">Short & Spicy</span>
           </button>
           <button class="mode-btn" role="tab" aria-selected="false"
             data-mode="classic" aria-label="Classic mode - detailed and formal">
-            📖 Classic
-            <span class="mode-desc">Deep Dive</span>
+            <span id="mode-classic-label">📖 Classic</span>
+            <span class="mode-desc" id="mode-classic-desc">Deep Dive</span>
           </button>
         </div>
 
         <!-- Example Prompt Chips -->
-        <div class="prompt-chips" aria-label="Example questions">
-          ${examplePrompts.map(p => `
-            <button class="chip" aria-label="Ask: ${p}">${p}</button>
+        <div class="prompt-chips" id="prompt-chips-container" aria-label="Example questions">
+          ${examplePrompts.map((p, i) => `
+            <button class="chip" id="prompt-chip-${i + 1}" aria-label="Ask: ${p}">${p}</button>
           `).join('')}
         </div>
 
@@ -80,7 +80,7 @@ const chatModule = (() => {
           role="log" aria-live="polite" aria-label="Chat conversation">
           <div class="chat-welcome">
             <span class="bot-avatar" aria-hidden="true">🎙️</span>
-            <div class="chat-bubble bot-bubble">
+            <div class="chat-bubble bot-bubble" id="chat-welcome-text">
               Hi! I'm VoxPop 👋 I'm here to answer all your election questions — 
               no matter how basic they seem. What would you like to know?
             </div>
