@@ -1,16 +1,42 @@
 {
     "elections": [
-        {
-            "id": "ind_2024",
-            "country": "India",
-            "year": 2024,
-            "type": "General Election"
-        },
-        {
-            "id": "usa_2024",
-            "country": "USA",
-            "year": 2024,
-            "type": "Presidential Election"
-        }
+        { "id": "ind_2024", "country": "India", "year": 2024, "type": "General Election" },
+        { "id": "usa_2024", "country": "USA", "year": 2024, "type": "Presidential Election" },
+        { "id": "ind_wb_2026", "country": "India", "state": "West Bengal", "year": 2026, "type": "General Election" },
+        { "id": "ind_ap_2024", "country": "India", "state": "Andhra Pradesh", "year": 2024, "type": "General Election" },
+        { "id": "ind_ar_2024", "country": "India", "state": "Arunachal Pradesh", "year": 2024, "type": "General Election" },
+        { "id": "ind_as_2024", "country": "India", "state": "Assam", "year": 2024, "type": "General Election" },
+        { "id": "ind_br_2024", "country": "India", "state": "Bihar", "year": 2024, "type": "General Election" },
+        { "id": "ind_ct_2024", "country": "India", "state": "Chhattisgarh", "year": 2024, "type": "General Election" },
+        { "id": "ind_ga_2024", "country": "India", "state": "Goa", "year": 2024, "type": "General Election" },
+        { "id": "ind_gj_2024", "country": "India", "state": "Gujarat", "year": 2024, "type": "General Election" },
+        { "id": "ind_hr_2024", "country": "India", "state": "Haryana", "year": 2024, "type": "General Election" },
+        { "id": "ind_hp_2024", "country": "India", "state": "Himachal Pradesh", "year": 2024, "type": "General Election" },
+        { "id": "ind_jh_2024", "country": "India", "state": "Jharkhand", "year": 2024, "type": "General Election" },
+        { "id": "ind_ka_2024", "country": "India", "state": "Karnataka", "year": 2024, "type": "General Election" },
+        { "id": "ind_kl_2024", "country": "India", "state": "Kerala", "year": 2024, "type": "General Election" },
+        { "id": "ind_mp_2024", "country": "India", "state": "Madhya Pradesh", "year": 2024, "type": "General Election" },
+        { "id": "ind_mh_2024", "country": "India", "state": "Maharashtra", "year": 2024, "type": "General Election" },
+        { "id": "ind_mn_2024", "country": "India", "state": "Manipur", "year": 2024, "type": "General Election" },
+        { "id": "ind_ml_2024", "country": "India", "state": "Meghalaya", "year": 2024, "type": "General Election" },
+        { "id": "ind_mz_2024", "country": "India", "state": "Mizoram", "year": 2024, "type": "General Election" },
+        { "id": "ind_nl_2024", "country": "India", "state": "Nagaland", "year": 2024, "type": "General Election" },
+        { "id": "ind_or_2024", "country": "India", "state": "Odisha", "year": 2024, "type": "General Election" },
+        { "id": "ind_pb_2024", "country": "India", "state": "Punjab", "year": 2024, "type": "General Election" },
+        { "id": "ind_rj_2024", "country": "India", "state": "Rajasthan", "year": 2024, "type": "General Election" },
+        { "id": "ind_sk_2024", "country": "India", "state": "Sikkim", "year": 2024, "type": "General Election" },
+        { "id": "ind_tn_2024", "country": "India", "state": "Tamil Nadu", "year": 2024, "type": "General Election" },
+        { "id": "ind_tg_2024", "country": "India", "state": "Telangana", "year": 2024, "type": "General Election" },
+        { "id": "ind_tr_2024", "country": "India", "state": "Tripura", "year": 2024, "type": "General Election" },
+        { "id": "ind_up_2024", "country": "India", "state": "Uttar Pradesh", "year": 2024, "type": "General Election" },
+        { "id": "ind_ut_2024", "country": "India", "state": "Uttarakhand", "year": 2024, "type": "General Election" },
+        { "id": "ind_an_2024", "country": "India", "state": "Andaman and Nicobar Islands", "year": 2024, "type": "General Election" },
+        { "id": "ind_ch_2024", "country": "India", "state": "Chandigarh", "year": 2024, "type": "General Election" },
+        { "id": "ind_dn_2024", "country": "India", "state": "Dadra and Nagar Haveli and Daman and Diu", "year": 2024, "type": "General Election" },
+        { "id": "ind_dl_2024", "country": "India", "state": "Delhi", "year": 2024, "type": "General Election" },
+        { "id": "ind_jk_2024", "country": "India", "state": "Jammu and Kashmir", "year": 2024, "type": "General Election" },
+        { "id": "ind_la_2024", "country": "India", "state": "Ladakh", "year": 2024, "type": "General Election" },
+        { "id": "ind_ld_2024", "country": "India", "state": "Lakshadweep", "year": 2024, "type": "General Election" },
+        { "id": "ind_py_2024", "country": "India", "state": "Puducherry", "year": 2024, "type": "General Election" }
     ]
 }

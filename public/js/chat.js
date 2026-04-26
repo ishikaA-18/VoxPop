@@ -3,11 +3,21 @@
  * Handles personality modes, language-aware chat, and Gemini API integration
  */
 
+'use strict';
+
 const chatModule = (() => {
     // State
     let conversationHistory = [];
     let personalityMode = 'simple';
     let isWaiting = false;
+
+    /**
+     * @description Simple frontend logger
+     */
+    const logger = {
+        info: (...args) => console.log('[VoxPop INFO]', ...args),
+        error: (...args) => console.error('[VoxPop ERROR]', ...args)
+    };
 
     // Example prompts shown to user
     const examplePrompts = [
@@ -19,15 +29,16 @@ const chatModule = (() => {
     ];
 
     /**
-     * Initialize chat module — build UI and attach events
+     * @description Initialize chat module — build UI and attach events
      */
     function init() {
         buildChatUI();
         attachEvents();
+        logger.info('Chat Module Initialized');
     }
 
     /**
-     * Build the entire chat section UI
+     * @description Build the entire chat section UI
      */
     function buildChatUI() {
         const section = document.getElementById('ask');
@@ -101,7 +112,7 @@ const chatModule = (() => {
     }
 
     /**
-     * Attach all event listeners
+     * @description Attach all event listeners for UI elements
      */
     function attachEvents() {
         // Mode toggle buttons
@@ -152,13 +163,15 @@ const chatModule = (() => {
                 }
             });
 
-            // Character counter
-            chatInput.addEventListener('input', () => {
+            // Character counter and auto-resize with debounce
+            const debouncedInput = debounce(() => {
                 updateCharCounter(chatInput.value.length);
                 // Auto-resize textarea
                 chatInput.style.height = 'auto';
                 chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
-            });
+            }, 300);
+
+            chatInput.addEventListener('input', debouncedInput);
         }
 
         // Language badge click — scroll to home language selector
@@ -179,7 +192,7 @@ const chatModule = (() => {
     }
 
     /**
-     * Update character counter display
+     * @description Update character counter display
      * @param {number} len - current input length
      */
     function updateCharCounter(len) {
@@ -191,7 +204,7 @@ const chatModule = (() => {
     }
 
     /**
-     * Update language badge text
+     * @description Update language badge text
      * @param {string} lang - selected language name
      */
     function updateLangBadge(lang) {
@@ -200,7 +213,8 @@ const chatModule = (() => {
     }
 
     /**
-     * Send message to VoxPop API
+     * @description Send message to VoxPop API and handle response
+     * @returns {Promise<void>}
      */
     async function sendMessage() {
         if (isWaiting) return;
@@ -211,7 +225,7 @@ const chatModule = (() => {
 
         // Get current selections
         const country = document.getElementById('country-select')?.value || 'India';
-        const electionType = document.getElementById('election-select')?.value || 'General';
+        const electionType = document.getElementById('election-select')?.value || 'General Election';
         const selectedLanguage = document.getElementById('language-select')?.value || 'English';
 
         // Clear input
@@ -267,7 +281,7 @@ const chatModule = (() => {
         } catch (err) {
             removeTyping();
             appendMessage('bot', "VoxPop is thinking... try again in a moment 🙏");
-            console.error('Chat error:', err);
+            logger.error('Chat error:', err);
         } finally {
             isWaiting = false;
             setInputDisabled(false);
@@ -276,7 +290,7 @@ const chatModule = (() => {
     }
 
     /**
-     * Append a message bubble to the chat window
+     * @description Append a message bubble to the chat window
      * @param {string} role - 'user' or 'bot'
      * @param {string} text - message content
      */
@@ -305,7 +319,7 @@ const chatModule = (() => {
     }
 
     /**
-     * Show typing indicator
+     * @description Show typing indicator in the chat window
      */
     function showTyping() {
         const chatWindow = document.getElementById('chatWindow');
@@ -327,15 +341,15 @@ const chatModule = (() => {
     }
 
     /**
-     * Remove typing indicator
+     * @description Remove typing indicator from the chat window
      */
     function removeTyping() {
         document.getElementById('typingIndicator')?.remove();
     }
 
     /**
-     * Enable or disable chat input
-     * @param {boolean} disabled
+     * @description Enable or disable chat input elements
+     * @param {boolean} disabled - whether to disable input
      */
     function setInputDisabled(disabled) {
         const input = document.getElementById('chatInput');
@@ -348,9 +362,9 @@ const chatModule = (() => {
     }
 
     /**
-     * Escape HTML to prevent XSS
-     * @param {string} str
-     * @returns {string}
+     * @description Escape HTML to prevent XSS
+     * @param {string} str - raw string
+     * @returns {string} - escaped string
      */
     function escapeHtml(str) {
         return str
@@ -360,6 +374,24 @@ const chatModule = (() => {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;')
             .replace(/\n/g, '<br>');
+    }
+
+    /**
+     * @description Debounce utility to limit execution rate
+     * @param {Function} func - function to debounce
+     * @param {number} wait - milliseconds to wait
+     * @returns {Function} - debounced function
+     */
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
     }
 
     return { init, updateLangBadge };

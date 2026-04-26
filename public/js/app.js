@@ -1,4 +1,9 @@
-// Main application logic
+/**
+ * app.js — Main Application Logic
+ * Handles localization, UI interactions, and general page setup.
+ */
+
+'use strict';
 
 const translations = {
     en: {
@@ -123,6 +128,7 @@ const translations = {
 
         queueTitle: "कतार समय अनुमानक ⏱️",
         labelVoters: "आपके बूथ पर कितने मतदाता हैं?",
+        labelVoters: "आपके बूथ पर कितने मतदाता हैं?",
         labelTime: "आप किस समय जाने की योजना बना रहे हैं?",
         calcQueueBtn: "प्रतीक्षा समय की गणना करें",
 
@@ -204,8 +210,16 @@ const translations = {
     }
 };
 
+/**
+ * @description Simple frontend logger
+ */
+const logger = {
+    info: (...args) => console.log('[VoxPop INFO]', ...args),
+    error: (...args) => console.error('[VoxPop ERROR]', ...args)
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('VoxPop Initialized');
+    logger.info('VoxPop Initialized');
 
     // Hamburger Menu Logic
     const hamburger = document.querySelector('.hamburger-menu');
@@ -214,18 +228,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hamburger) {
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
+            navLinks?.classList.toggle('active');
             const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
-            hamburger.setAttribute('aria-expanded', !isExpanded);
+            hamburger.setAttribute('aria-expanded', (!isExpanded).toString());
         });
     }
 
     // Close menu when clicking a link
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navLinks.classList.remove('active');
-            hamburger.setAttribute('aria-expanded', 'false');
+            hamburger?.classList.remove('active');
+            navLinks?.classList.remove('active');
+            hamburger?.setAttribute('aria-expanded', 'false');
         });
     });
 
@@ -252,9 +266,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (countrySelect) {
         countrySelect.addEventListener('change', (e) => {
             if (e.target.value === 'in') {
-                electionGroup.style.display = 'flex';
+                if (electionGroup) electionGroup.style.display = 'flex';
             } else {
-                electionGroup.style.display = 'none';
+                if (electionGroup) electionGroup.style.display = 'none';
             }
         });
     }
@@ -274,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         threshold: 0.15 // Trigger when 15% of the item is visible
     };
 
-    const observer = new IntersectionObserver((entries, observer) => {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const dot = entry.target.querySelector('.timeline-dot');
             if (entry.isIntersecting) {
@@ -319,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     stepBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const topic = btn.getAttribute('data-topic');
-            console.log("Navigating to Ask VoxPop with topic:", topic);
+            logger.info("Navigating to Ask VoxPop with topic:", topic);
 
             // Scroll to chat section
             document.getElementById('ask')?.scrollIntoView({
@@ -338,6 +352,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+/**
+ * @description Updates the entire page UI based on the selected language
+ * @param {string} lang - language code (en, hi, bn)
+ */
 function updateLanguage(lang) {
     const t = translations[lang] || translations['en'];
 

@@ -3,6 +3,8 @@
  * Handles MCQ quiz generation, scoring, badge generation, and social sharing.
  */
 
+'use strict';
+
 const quizModule = (() => {
     // State
     let questions = [];
@@ -11,14 +13,23 @@ const quizModule = (() => {
     let userAnswers = [];
 
     /**
-     * Initialize quiz module
+     * @description Simple frontend logger
+     */
+    const logger = {
+        info: (...args) => console.log('[VoxPop INFO]', ...args),
+        error: (...args) => console.error('[VoxPop ERROR]', ...args)
+    };
+
+    /**
+     * @description Initialize quiz module
      */
     function init() {
         buildQuizUI();
+        logger.info('Quiz Module Initialized');
     }
 
     /**
-     * Build the initial UI for the quiz section
+     * @description Build the initial UI for the quiz section
      */
     function buildQuizUI() {
         const section = document.getElementById('my-voxpop');
@@ -69,11 +80,26 @@ const quizModule = (() => {
         `;
 
         document.getElementById('start-quiz-btn')?.addEventListener('click', startQuiz);
-        document.getElementById('restart-quiz-btn')?.addEventListener('click', () => location.reload());
+        document.getElementById('restart-quiz-btn')?.addEventListener('click', restartQuiz);
     }
 
     /**
-     * Start the quiz — fetch questions from API
+     * @description Restart the quiz using cached questions
+     */
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        userAnswers = [];
+        
+        document.getElementById('quiz-results').style.display = 'none';
+        document.getElementById('quiz-content').style.display = 'block';
+        
+        showQuestion();
+    }
+
+    /**
+     * @description Start the quiz — fetch questions from API
+     * @returns {Promise<void>}
      */
     async function startQuiz() {
         const intro = document.getElementById('quiz-intro');
@@ -106,13 +132,13 @@ const quizModule = (() => {
 
             showQuestion();
         } catch (err) {
-            console.error('Quiz fetch error:', err);
+            logger.error('Quiz fetch error:', err);
             document.getElementById('question-text').textContent = 'Error loading questions. Please try again.';
         }
     }
 
     /**
-     * Display current question
+     * @description Display current question and its options
      */
     function showQuestion() {
         const q = questions[currentQuestionIndex];
@@ -143,8 +169,8 @@ const quizModule = (() => {
     }
 
     /**
-     * Handle user's answer selection
-     * @param {number} selectedIndex 
+     * @description Handle user's answer selection and update score
+     * @param {number} selectedIndex - index of the selected option
      */
     function handleAnswer(selectedIndex) {
         const q = questions[currentQuestionIndex];
@@ -182,7 +208,7 @@ const quizModule = (() => {
     }
 
     /**
-     * Show final results and generate badge
+     * @description Show final results and generate civic badge
      */
     function showResults() {
         document.getElementById('quiz-content').style.display = 'none';
@@ -225,11 +251,12 @@ const quizModule = (() => {
     }
 
     /**
-     * Generate badge using HTML Canvas
-     * @param {string} title 
+     * @description Generate badge using HTML Canvas
+     * @param {string} title - title earned by the user
      */
     function generateBadge(title) {
         const canvas = document.getElementById('badge-canvas');
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
         // Clear
@@ -270,14 +297,15 @@ const quizModule = (() => {
 
         // Preview
         const preview = document.getElementById('badge-preview');
-        preview.src = canvas.toDataURL('image/png');
+        if (preview) preview.src = canvas.toDataURL('image/png');
     }
 
     /**
-     * Download the generated badge
+     * @description Download the generated badge image
      */
     function downloadBadge() {
         const canvas = document.getElementById('badge-canvas');
+        if (!canvas) return;
         const link = document.createElement('a');
         link.download = 'voxpop-civic-badge.png';
         link.href = canvas.toDataURL('image/png');
@@ -290,7 +318,8 @@ const quizModule = (() => {
     }
 
     /**
-     * Share score on LinkedIn
+     * @description Share quiz score on LinkedIn
+     * @param {string} title - title earned by the user
      */
     function shareOnLinkedIn(title) {
         const url = window.location.href;
@@ -300,7 +329,10 @@ const quizModule = (() => {
     }
 
     /**
-     * Save score to Firebase Firestore
+     * @description Save quiz score to Firebase Firestore
+     * @param {number} score - user's score
+     * @param {string} title - title earned
+     * @returns {Promise<void>}
      */
     async function saveScoreToFirestore(score, title) {
         if (window.voxpopFirebase && window.voxpopFirebase.saveScore) {

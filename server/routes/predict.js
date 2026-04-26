@@ -1,15 +1,30 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { DEFAULTS, MODELS } = require('../constants');
+const logger = require('../utils/logger');
+const { validateFields } = require('../utils/validation');
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder');
 
-router.post('/', async (req, res) => {
+/**
+ * @description POST /api/predict - Predicts the next election date for a given location
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+router.post('/', validateFields(['country', 'electionType']), async (req, res) => {
     try {
-        const { country, state, voterCardDate, electionType } = req.body;
+        const {
+            country,
+            state,
+            voterCardDate,
+            electionType = DEFAULTS.ELECTION_TYPE
+        } = req.body;
 
         let knownElections = [];
         try {
@@ -17,14 +32,24 @@ router.post('/', async (req, res) => {
             const fileData = fs.readFileSync(dataPath, 'utf8');
             knownElections = JSON.parse(fileData).elections || [];
         } catch (err) {
-            console.error('Error reading elections.json', err);
+            logger.error('Error reading elections.json', err);
         }
 
-        // Try to find a known election
-        const knownMatch = knownElections.find(e =>
+        // Try to find a known election (prefer exact state match if state is provided)
+        let knownMatch = knownElections.find(e =>
             e.country.toLowerCase() === (country || '').toLowerCase() &&
-            e.type.toLowerCase() === (electionType || '').toLowerCase()
+            e.type.toLowerCase() === (electionType || '').toLowerCase() &&
+            e.state && e.state.toLowerCase() === (state || '').toLowerCase()
         );
+
+        // If no state match, look for country-wide match
+        if (!knownMatch) {
+            knownMatch = knownElections.find(e =>
+                e.country.toLowerCase() === (country || '').toLowerCase() &&
+                e.type.toLowerCase() === (electionType || '').toLowerCase() &&
+                !e.state
+            );
+        }
 
         const currentYear = new Date().getFullYear();
         let isEligible = true;
@@ -58,7 +83,7 @@ Respond with ONLY a valid JSON object in this exact format:
 }
 Do not include any markdown formatting, backticks, or other text.`;
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' }, { apiVersion: 'v1beta' });
+        const model = genAI.getGenerativeModel({ model: MODELS.PREDICT_MODEL }, { apiVersion: 'v1beta' });
         const result = await model.generateContent(prompt);
         let responseText = result.response.text();
 
@@ -67,10 +92,10 @@ Do not include any markdown formatting, backticks, or other text.`;
             let cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
             prediction = JSON.parse(cleanJson);
         } catch (e) {
-            console.error('Failed to parse Gemini prediction JSON:', e);
+            logger.error('Failed to parse Gemini prediction JSON:', e);
             prediction = {
                 nextElectionDate: "Unknown",
-                electionName: electionType || "General Election",
+                electionName: electionType,
                 whatVotingFor: "Representatives",
                 isHappeningNow: false
             };
@@ -83,11 +108,10 @@ Do not include any markdown formatting, backticks, or other text.`;
         });
 
     } catch (error) {
-        console.error('Prediction error:', error);
-        // Fallback prediction
+        logger.error('Prediction error:', error);
         res.json({
             nextElectionDate: "Upcoming (Check official ECI schedule)",
-            electionName: req.body.electionType || "General Election",
+            electionName: req.body.electionType || DEFAULTS.ELECTION_TYPE,
             whatVotingFor: "Democratic Representatives",
             isHappeningNow: false,
             isEligible: true,

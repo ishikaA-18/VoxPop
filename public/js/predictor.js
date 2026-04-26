@@ -3,16 +3,27 @@
  * Handles election date predictions and eligibility checks.
  */
 
+'use strict';
+
 const predictorModule = (() => {
     /**
-     * Initialize predictor module
+     * @description Simple frontend logger
+     */
+    const logger = {
+        info: (...args) => console.log('[VoxPop INFO]', ...args),
+        error: (...args) => console.error('[VoxPop ERROR]', ...args)
+    };
+
+    /**
+     * @description Initialize predictor module
      */
     function init() {
         buildPredictorUI();
+        logger.info('Predictor Module Initialized');
     }
 
     /**
-     * Build UI for predictor section
+     * @description Build UI for predictor section
      */
     function buildPredictorUI() {
         const section = document.getElementById('my-voxpop');
@@ -68,19 +79,22 @@ const predictorModule = (() => {
     }
 
     /**
-     * Predict the next vote based on user input
+     * @description Predict the next vote based on user input and API response
+     * @returns {Promise<void>}
      */
     async function predictVote() {
-        const country = document.getElementById('predict-country').value;
-        const state = document.getElementById('predict-state').value;
-        const electionType = document.getElementById('predict-election').value;
-        const dob = document.getElementById('predict-dob').value;
+        const country = document.getElementById('predict-country')?.value;
+        const state = document.getElementById('predict-state')?.value;
+        const electionType = document.getElementById('predict-election')?.value;
+        const dob = document.getElementById('predict-dob')?.value;
         const resultBox = document.getElementById('predict-result');
 
         if (!country || !dob) {
             alert('Please enter your country and date of birth.');
             return;
         }
+
+        if (!resultBox) return;
 
         resultBox.style.display = 'block';
         resultBox.innerHTML = '<p>Consulting the democratic calendar...</p>';
@@ -121,7 +135,7 @@ const predictorModule = (() => {
             }
 
         } catch (err) {
-            console.error('Prediction error:', err);
+            logger.error('Prediction error:', err);
             resultBox.innerHTML = '<p>Error predicting vote. Please try again later.</p>';
         }
     }
