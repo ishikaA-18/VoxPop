@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const { DEFAULTS, LIMITS, MODELS, PERSONALITY_LIMITS } = require('../constants');
 const logger = require('../utils/logger');
 const { validateFields } = require('../utils/validation');
+const runWithRetry = require('../utils/ai-retry');
 
 const { CHAT_SYSTEM_PROMPT, FALLBACK_MESSAGES } = require('../prompts');
 
@@ -81,7 +82,7 @@ router.post('/', chatLimiter, validateFields(['message']), async (req, res) => {
         }));
 
         const chat = model.startChat({ history: formattedHistory });
-        const result = await chat.sendMessage(sanitizedMessage);
+        const result = await runWithRetry(() => chat.sendMessage(sanitizedMessage));
         const reply = result.response.text();
 
         // Store in cache

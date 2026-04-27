@@ -8,6 +8,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { DEFAULTS, MODELS } = require('../constants');
 const logger = require('../utils/logger');
 const { validateFields } = require('../utils/validation');
+const runWithRetry = require('../utils/ai-retry');
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder');
@@ -84,7 +85,7 @@ Respond with ONLY a valid JSON object in this exact format:
 Do not include any markdown formatting, backticks, or other text.`;
 
         const model = genAI.getGenerativeModel({ model: MODELS.PREDICT_MODEL }, { apiVersion: 'v1beta' });
-        const result = await model.generateContent(prompt);
+        const result = await runWithRetry(() => model.generateContent(prompt));
         let responseText = result.response.text();
 
         let prediction;

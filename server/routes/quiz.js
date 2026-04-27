@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const { DEFAULTS, LIMITS, MODELS } = require('../constants');
 const logger = require('../utils/logger');
 const { validateFields } = require('../utils/validation');
+const runWithRetry = require('../utils/ai-retry');
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder');
@@ -38,7 +39,7 @@ router.post('/', quizLimiter, async (req, res) => {
         const prompt = `Generate exactly ${LIMITS.QUIZ_QUESTION_COUNT} MCQ questions about the ${electionType} election process in ${country}. Difficulty: ${finalDifficulty}. Respond in ${selectedLanguage} using the correct script. Return ONLY valid JSON array: [{"question":"...","options":["...","...","...","..."],"correctIndex":0,"explanation":"..."}]. No markdown, no preamble.`;
 
         const model = genAI.getGenerativeModel({ model: MODELS.QUIZ_MODEL }, { apiVersion: 'v1beta' });
-        const result = await model.generateContent(prompt);
+        const result = await runWithRetry(() => model.generateContent(prompt));
         const responseText = result.response.text();
 
         try {
