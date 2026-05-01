@@ -3,9 +3,9 @@
 > *কোনো ভোটার যেন বাদ না পড়েন — No voter should be left behind.*
 > — Election Commission of India
 
-[![Lighthouse Performance](https://img.shields.io/badge/Performance-93-brightgreen)](https://voxpop-652440308750.us-central1.run.app)
+[![Lighthouse Performance](https://img.shields.io/badge/Performance-97-brightgreen)](https://voxpop-652440308750.us-central1.run.app)
 [![Lighthouse Accessibility](https://img.shields.io/badge/Accessibility-96-brightgreen)](https://voxpop-652440308750.us-central1.run.app)
-[![Lighthouse Best Practices](https://img.shields.io/badge/Best%20Practices-96-brightgreen)](https://voxpop-652440308750.us-central1.run.app)
+[![Lighthouse Best Practices](https://img.shields.io/badge/Best%20Practices-100-brightgreen)](https://voxpop-652440308750.us-central1.run.app)
 [![Lighthouse SEO](https://img.shields.io/badge/SEO-91-brightgreen)](https://voxpop-652440308750.us-central1.run.app)
 
 **🌐 Live Demo:** [https://voxpop-652440308750.us-central1.run.app](https://voxpop-652440308750.us-central1.run.app)
@@ -68,14 +68,22 @@ voxpop/
 │       ├── evm.js           # EVM Simulator
 │       └── firebase.js      # Firestore + Analytics
 ├── data/
-│   ├── elections.json       # Known election dates by state
-│   └── steps/india.json     # Official ECI voting steps
+│   ├── steps/
+│   │   ├── india.json       # Official ECI voting steps
+│   │   └── usa.json         # Comparative voting procedures
+│   └── elections.json       # Known election dates by state
 ├── server/
 │   ├── index.js             # Express app with Helmet + CORS
 │   └── routes/
 │       ├── chat.js          # POST /api/chat → Gemini
 │       ├── quiz.js          # POST /api/quiz → Gemini MCQs
 │       └── predict.js       # POST /api/predict → JSON + Gemini
+│   ├── utils/
+│   │   ├── ai-retry.js      # Exponential backoff logic for Gemini
+│   │   ├── logger.js        # Server-side error logging
+│   │   ├── validation.js    # Input sanitization
+│   │   ├── constants.js     # Shared configuration
+│   │   └── prompts.js       # System prompt templates
 ├── tests/
 │   └── api.test.js          # Jest test suite
 ├── Dockerfile               # node:18-alpine production image
