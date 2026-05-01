@@ -9,14 +9,12 @@
 const voxpopFirebase = (() => {
 
     /**
-     * @description Log an analytics event to console (mocking Firebase Analytics)
+     * @description Log an analytics event (mocking Firebase Analytics)
      * @param {string} eventName - name of the event
      * @param {Object} params - event parameters
      */
     function logEvent(eventName, params = {}) {
-        if (typeof console !== 'undefined') {
-            console.log(`[Firebase Analytics] Event: ${eventName}`, params);
-        }
+        // Silenced for production
     }
 
     /**
@@ -25,9 +23,6 @@ const voxpopFirebase = (() => {
      * @returns {Promise<Object>}
      */
     async function saveScore(data) {
-        if (typeof console !== 'undefined') {
-            console.log('[Firebase Firestore] Saving Score:', data);
-        }
         return Promise.resolve({ id: 'mock-doc-id' });
     }
 
@@ -37,10 +32,6 @@ const voxpopFirebase = (() => {
 // Export to window for other modules to use
 window.voxpopAnalytics = voxpopFirebase;
 window.voxpopFirebase = voxpopFirebase;
-
-if (typeof console !== 'undefined') {
-    console.log('VoxPop Firebase Module Initialized');
-}
 
 // Firebase configuration placeholder
 const firebaseConfig = {

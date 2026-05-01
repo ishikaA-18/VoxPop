@@ -13,10 +13,10 @@ const quizModule = (() => {
     let userAnswers = [];
 
     /**
-     * @description Simple frontend logger
+     * @description Simple frontend logger (silenced info for production)
      */
     const logger = {
-        info: (...args) => console.log('[VoxPop INFO]', ...args),
+        info: () => {}, // Disabled for production
         error: (...args) => console.error('[VoxPop ERROR]', ...args)
     };
 
@@ -25,7 +25,6 @@ const quizModule = (() => {
      */
     function init() {
         buildQuizUI();
-        logger.info('Quiz Module Initialized');
     }
 
     /**

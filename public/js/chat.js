@@ -12,10 +12,10 @@ const chatModule = (() => {
     let isWaiting = false;
 
     /**
-     * @description Simple frontend logger
+     * @description Simple frontend logger (silenced info for production)
      */
     const logger = {
-        info: (...args) => console.log('[VoxPop INFO]', ...args),
+        info: () => {}, // Disabled for production
         error: (...args) => console.error('[VoxPop ERROR]', ...args)
     };
 
@@ -31,10 +31,12 @@ const chatModule = (() => {
     /**
      * @description Initialize chat module — build UI and attach events
      */
+    /**
+     * @description Initialize chat module — build UI and attach events
+     */
     function init() {
         buildChatUI();
         attachEvents();
-        logger.info('Chat Module Initialized');
     }
 
     /**
@@ -94,6 +96,7 @@ const chatModule = (() => {
             🇮🇳 English
           </div>
           <div class="input-wrapper">
+            <label for="chatInput" class="visually-hidden">Ask VoxPop your election question</label>
             <textarea
               id="chatInput"
               class="chat-input"
@@ -112,10 +115,9 @@ const chatModule = (() => {
     }
 
     /**
-     * @description Attach all event listeners for UI elements
+     * @description Attaches mode toggle button listeners
      */
-    function attachEvents() {
-        // Mode toggle buttons
+    function attachModeToggle() {
         document.querySelectorAll('.mode-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.mode-btn').forEach(b => {
@@ -125,17 +127,17 @@ const chatModule = (() => {
                 btn.classList.add('active');
                 btn.setAttribute('aria-selected', 'true');
                 personalityMode = btn.dataset.mode;
-
-                // Log analytics event
                 if (window.voxpopAnalytics) {
-                    window.voxpopAnalytics.logEvent('personality_mode_toggled', {
-                        mode: personalityMode
-                    });
+                    window.voxpopAnalytics.logEvent('personality_mode_toggled', { mode: personalityMode });
                 }
             });
         });
+    }
 
-        // Example prompt chips
+    /**
+     * @description Attaches prompt chip click listeners
+     */
+    function attachPromptChips() {
         document.querySelectorAll('.chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 const input = document.getElementById('chatInput');
@@ -146,14 +148,14 @@ const chatModule = (() => {
                 }
             });
         });
+    }
 
-        // Send button
-        const sendBtn = document.getElementById('sendBtn');
-        if (sendBtn) {
-            sendBtn.addEventListener('click', sendMessage);
-        }
+    /**
+     * @description Attaches send button and keyboard input listeners
+     */
+    function attachInputEvents() {
+        document.getElementById('sendBtn')?.addEventListener('click', sendMessage);
 
-        // Enter key to send (Shift+Enter for new line)
         const chatInput = document.getElementById('chatInput');
         if (chatInput) {
             chatInput.addEventListener('keydown', (e) => {
@@ -162,19 +164,19 @@ const chatModule = (() => {
                     sendMessage();
                 }
             });
-
-            // Character counter and auto-resize with debounce
             const debouncedInput = debounce(() => {
                 updateCharCounter(chatInput.value.length);
-                // Auto-resize textarea
                 chatInput.style.height = 'auto';
                 chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
             }, 300);
-
             chatInput.addEventListener('input', debouncedInput);
         }
+    }
 
-        // Language badge click — scroll to home language selector
+    /**
+     * @description Attaches language badge and selector listeners
+     */
+    function attachLanguageEvents() {
         const langBadge = document.getElementById('langBadge');
         if (langBadge) {
             langBadge.addEventListener('click', () => {
@@ -184,11 +186,19 @@ const chatModule = (() => {
                 if (e.key === 'Enter') langBadge.click();
             });
         }
-
-        // Listen for language changes from home page selector
         document.getElementById('language-select')?.addEventListener('change', (e) => {
             updateLangBadge(e.target.value);
         });
+    }
+
+    /**
+     * @description Attach all event listeners for UI elements
+     */
+    function attachEvents() {
+        attachModeToggle();
+        attachPromptChips();
+        attachInputEvents();
+        attachLanguageEvents();
     }
 
     /**
@@ -216,68 +226,87 @@ const chatModule = (() => {
      * @description Send message to VoxPop API and handle response
      * @returns {Promise<void>}
      */
-    async function sendMessage() {
-        if (isWaiting) return;
-
+    /**
+     * @description Reads user input, clears the field, and updates UI
+     * @returns {{message: string, country: string, electionType: string, selectedLanguage: string}|null} Payload or null if empty
+     */
+    function prepareMessagePayload() {
         const input = document.getElementById('chatInput');
         const message = input?.value?.trim();
-        if (!message) return;
+        if (!message) return null;
 
-        // Get current selections
         const country = document.getElementById('country-select')?.value || 'India';
         const electionType = document.getElementById('election-select')?.value || 'General Election';
         const selectedLanguage = document.getElementById('language-select')?.value || 'English';
 
-        // Clear input
         input.value = '';
         input.style.height = 'auto';
         updateCharCounter(0);
 
-        // Add user message to UI
-        appendMessage('user', message);
+        return { message, country, electionType, selectedLanguage };
+    }
 
-        // Add to history
-        conversationHistory.push({ role: 'user', content: message });
+    /**
+     * @description Adds a message to conversation history, trimming if too long
+     * @param {string} role - 'user' or 'assistant'
+     * @param {string} content - The message content
+     */
+    function addToHistory(role, content) {
+        conversationHistory.push({ role, content });
         if (conversationHistory.length > 20) {
             conversationHistory = conversationHistory.slice(-20);
         }
+    }
 
-        // Show typing indicator
+    /**
+     * @description Calls the chat API and handles the response
+     * @param {Object} payload - The message payload
+     * @returns {Promise<void>}
+     */
+    async function fetchChatReply(payload) {
+        const { message, country, electionType, selectedLanguage } = payload;
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message, country, electionType, personalityMode,
+                selectedLanguage,
+                conversationHistory: conversationHistory.slice(-10)
+            })
+        });
+        const data = await res.json();
+        removeTyping();
+
+        if (res.ok && data.reply) {
+            appendMessage('bot', data.reply);
+            addToHistory('assistant', data.reply);
+            if (window.voxpopAnalytics) {
+                window.voxpopAnalytics.logEvent('chat_message_sent', { personalityMode, language: selectedLanguage });
+            }
+        } else {
+            appendMessage('bot', "VoxPop is thinking... try again in a moment 🙏");
+        }
+    }
+
+    /**
+     * @description Send message to VoxPop API and handle response
+     * @returns {Promise<void>}
+     */
+    async function sendMessage() {
+        if (isWaiting) return;
+
+        const payload = prepareMessagePayload();
+        if (!payload) return;
+
+        appendMessage('user', payload.message);
+        addToHistory('user', payload.message);
+
         showTyping();
         isWaiting = true;
         setInputDisabled(true);
 
         try {
-            const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message,
-                    country,
-                    electionType,
-                    personalityMode,
-                    selectedLanguage,
-                    conversationHistory: conversationHistory.slice(-10)
-                })
-            });
-
-            const data = await res.json();
-            removeTyping();
-
-            if (res.ok && data.reply) {
-                appendMessage('bot', data.reply);
-                conversationHistory.push({ role: 'assistant', content: data.reply });
-
-                // Log analytics
-                if (window.voxpopAnalytics) {
-                    window.voxpopAnalytics.logEvent('chat_message_sent', {
-                        personalityMode,
-                        language: selectedLanguage
-                    });
-                }
-            } else {
-                appendMessage('bot', "VoxPop is thinking... try again in a moment 🙏");
-            }
+            await fetchChatReply(payload);
         } catch (err) {
             removeTyping();
             appendMessage('bot', "VoxPop is thinking... try again in a moment 🙏");

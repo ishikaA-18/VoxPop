@@ -7,10 +7,10 @@
 
 const predictorModule = (() => {
     /**
-     * @description Simple frontend logger
+     * @description Simple frontend logger (silenced info for production)
      */
     const logger = {
-        info: (...args) => console.log('[VoxPop INFO]', ...args),
+        info: () => {}, // Disabled for production
         error: (...args) => console.error('[VoxPop ERROR]', ...args)
     };
 
@@ -19,7 +19,6 @@ const predictorModule = (() => {
      */
     function init() {
         buildPredictorUI();
-        logger.info('Predictor Module Initialized');
     }
 
     /**
@@ -29,7 +28,6 @@ const predictorModule = (() => {
         const section = document.getElementById('my-voxpop');
         if (!section) return;
 
-        // Append to existing content (which might have the quiz)
         const predictorDiv = document.createElement('div');
         predictorDiv.className = 'predictor-wrapper';
         predictorDiv.innerHTML = `
@@ -79,21 +77,72 @@ const predictorModule = (() => {
     }
 
     /**
-     * @description Predict the next vote based on user input and API response
-     * @returns {Promise<void>}
+     * @description Reads and validates form inputs for the predictor
+     * @returns {Object|null} The form values, or null if validation fails
      */
-    async function predictVote() {
+    function getFormValues() {
         const country = document.getElementById('predict-country')?.value;
         const state = document.getElementById('predict-state')?.value;
         const electionType = document.getElementById('predict-election')?.value;
         const dob = document.getElementById('predict-dob')?.value;
-        const resultBox = document.getElementById('predict-result');
 
         if (!country || !dob) {
             alert('Please enter your country and date of birth.');
-            return;
+            return null;
         }
+        return { country, state, electionType, dob };
+    }
 
+    /**
+     * @description Builds the HTML for the "happening now" badge
+     * @param {Object} data - The API response data
+     * @param {string} state - The state value from the form
+     * @param {string} electionType - The election type value from the form
+     * @returns {string} HTML string for the badge
+     */
+    const buildHappeningNowBadge = (data, state, electionType) => {
+        if (state?.toLowerCase() === 'west bengal' && electionType === 'State Assembly') {
+            return '<span class="now-badge">HAPPENING NOW 🔴</span>';
+        }
+        if (data.isHappeningNow) {
+            return '<span class="now-badge">LIVE 🔴</span>';
+        }
+        return '';
+    };
+
+    /**
+     * @description Renders the prediction result into the result box
+     * @param {Object} data - The API response data
+     * @param {HTMLElement} resultBox - The container element
+     * @param {string} state - The state value from the form
+     * @param {string} electionType - The election type from the form
+     */
+    const renderResult = (data, resultBox, state, electionType) => {
+        const happeningNowBadge = buildHappeningNowBadge(data, state, electionType);
+        resultBox.innerHTML = `
+            <div class="result-card">
+                ${happeningNowBadge}
+                <h4>${data.electionName}</h4>
+                <div class="date-highlight">${data.nextElectionDate}</div>
+                <p><strong>What you're voting for:</strong> ${data.whatVotingFor}</p>
+                <div class="status-badge ${data.isEligible ? 'eligible' : 'not-eligible'}">
+                    ${data.isEligible ? '✅ You are eligible to vote!' : '⏳ You will be eligible soon!'}
+                </div>
+                <p class="disclaimer">${data.disclaimer}</p>
+            </div>
+        `;
+    };
+
+    /**
+     * @description Predict the next vote based on user input and API response
+     * @returns {Promise<void>}
+     */
+    async function predictVote() {
+        const formValues = getFormValues();
+        if (!formValues) return;
+
+        const { country, state, electionType, dob } = formValues;
+        const resultBox = document.getElementById('predict-result');
         if (!resultBox) return;
 
         resultBox.style.display = 'block';
@@ -107,29 +156,8 @@ const predictorModule = (() => {
             });
 
             const data = await res.json();
-            
-            // Special case for West Bengal State Assembly
-            let happeningNowBadge = '';
-            if (state?.toLowerCase() === 'west bengal' && electionType === 'State Assembly') {
-                happeningNowBadge = '<span class="now-badge">HAPPENING NOW 🔴</span>';
-            } else if (data.isHappeningNow) {
-                happeningNowBadge = '<span class="now-badge">LIVE 🔴</span>';
-            }
+            renderResult(data, resultBox, state, electionType);
 
-            resultBox.innerHTML = `
-                <div class="result-card">
-                    ${happeningNowBadge}
-                    <h4>${data.electionName}</h4>
-                    <div class="date-highlight">${data.nextElectionDate}</div>
-                    <p><strong>What you're voting for:</strong> ${data.whatVotingFor}</p>
-                    <div class="status-badge ${data.isEligible ? 'eligible' : 'not-eligible'}">
-                        ${data.isEligible ? '✅ You are eligible to vote!' : '⏳ You will be eligible soon!'}
-                    </div>
-                    <p class="disclaimer">${data.disclaimer}</p>
-                </div>
-            `;
-
-            // Log analytics
             if (window.voxpopAnalytics) {
                 window.voxpopAnalytics.logEvent('predictor_used', { country, state, electionType });
             }
@@ -145,3 +173,4 @@ const predictorModule = (() => {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => predictorModule.init());
+

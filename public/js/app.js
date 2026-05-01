@@ -603,17 +603,17 @@ const translations = {
 };
 
 /**
- * @description Simple frontend logger
+ * @description Simple frontend logger (silenced info for production)
  */
 const logger = {
-    info: (...args) => console.log('[VoxPop INFO]', ...args),
+    info: () => {}, // Disabled for production
     error: (...args) => console.error('[VoxPop ERROR]', ...args)
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    logger.info('VoxPop Initialized');
-
-    // Hamburger Menu Logic
+/**
+ * @description Initializes the hamburger menu logic
+ */
+const initMenu = () => {
     const hamburger = document.querySelector('.hamburger-menu');
     const navLinks = document.querySelector('.nav-links');
 
@@ -626,7 +626,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Close menu when clicking a link
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {
             hamburger?.classList.remove('active');
@@ -634,11 +633,13 @@ document.addEventListener('DOMContentLoaded', () => {
             hamburger?.setAttribute('aria-expanded', 'false');
         });
     });
+};
 
-    // Language Selection Logic
+/**
+ * @description Initializes language selection and loading
+ */
+const initLanguage = () => {
     const languageSelect = document.getElementById('language-select');
-
-    // Load saved language
     const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
     if (languageSelect) {
         languageSelect.value = savedLanguage;
@@ -650,8 +651,12 @@ document.addEventListener('DOMContentLoaded', () => {
             updateLanguage(lang);
         });
     }
+};
 
-    // Country selection logic to toggle election type dropdown
+/**
+ * @description Initializes country-specific UI logic
+ */
+const initCountrySelection = () => {
     const countrySelect = document.getElementById('country-select');
     const electionGroup = document.getElementById('election-type-group');
 
@@ -664,83 +669,87 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+};
 
-    // "Start My Journey" Button Smooth Scroll
-    document.querySelector('.cta-btn')?.addEventListener('click', () => {
-        document.getElementById('learn')?.scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
-
-    // Timeline Intersection Observer
+/**
+ * @description Initializes timeline scroll animations using Intersection Observer
+ */
+const initTimelineObserver = () => {
     const timelineItems = document.querySelectorAll('.timeline-item');
     const observerOptions = {
         root: null,
         rootMargin: '0px 0px -10% 0px',
-        threshold: 0.15 // Trigger when 15% of the item is visible
+        threshold: 0.15
     };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            const dot = entry.target.querySelector('.timeline-dot');
             if (entry.isIntersecting) {
-                // Add animation class
                 entry.target.classList.add('slide-in-left');
-
-                // Remove 'current' from all dots
-                document.querySelectorAll('.timeline-dot').forEach(d => d.classList.remove('current'));
-
-                // Add 'current' to this dot
-                if (dot) dot.classList.add('current');
-
-                // Mark previous dots as completed
-                let foundCurrent = false;
-                document.querySelectorAll('.timeline-dot').forEach(d => {
-                    if (d === dot) {
-                        foundCurrent = true;
-                        d.classList.remove('completed');
-                    } else if (!foundCurrent) {
-                        d.classList.add('completed');
-                        d.classList.remove('current');
-                    } else {
-                        d.classList.remove('completed');
-                        d.classList.remove('current');
-                    }
-                });
-
+                updateTimelineDots(entry.target.querySelector('.timeline-dot'));
             }
         });
     }, observerOptions);
 
     timelineItems.forEach(item => {
-        // Initially set opacity to 0 via JS so they can animate in
-        // but remain visible if JS fails (since CSS opacity is now 1)
         item.style.opacity = '0';
         item.style.transform = 'translateX(-50px)';
         observer.observe(item);
     });
+};
 
-    // "Tell me more" button logic
+/**
+ * @description Updates timeline dots state based on current visible item
+ * @param {HTMLElement} dot - The current timeline dot
+ */
+const updateTimelineDots = (dot) => {
+    if (!dot) return;
+    document.querySelectorAll('.timeline-dot').forEach(d => d.classList.remove('current'));
+    dot.classList.add('current');
+
+    let foundCurrent = false;
+    document.querySelectorAll('.timeline-dot').forEach(d => {
+        if (d === dot) {
+            foundCurrent = true;
+            d.classList.remove('completed');
+        } else if (!foundCurrent) {
+            d.classList.add('completed');
+            d.classList.remove('current');
+        } else {
+            d.classList.remove('completed');
+            d.classList.remove('current');
+        }
+    });
+};
+
+/**
+ * @description Initializes "Tell me more" buttons to link to chat
+ */
+const initStepButtons = () => {
     const stepBtns = document.querySelectorAll('.step-btn');
     stepBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const topic = btn.getAttribute('data-topic');
-            logger.info("Navigating to Ask VoxPop with topic:", topic);
-
-            // Scroll to chat section
-            document.getElementById('ask')?.scrollIntoView({
-                behavior: 'smooth'
-            });
-
-            // Pre-fill chat input
+            document.getElementById('ask')?.scrollIntoView({ behavior: 'smooth' });
             const chatInput = document.getElementById('chatInput');
             if (chatInput) {
                 chatInput.value = "Tell me more about: " + topic;
-                // Trigger input event to update char counter and resize
                 chatInput.dispatchEvent(new Event('input'));
                 chatInput.focus();
             }
         });
+    });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initMenu();
+    initLanguage();
+    initCountrySelection();
+    initTimelineObserver();
+    initStepButtons();
+
+    document.querySelector('.cta-btn')?.addEventListener('click', () => {
+        document.getElementById('learn')?.scrollIntoView({ behavior: 'smooth' });
     });
 });
 
@@ -748,10 +757,30 @@ document.addEventListener('DOMContentLoaded', () => {
  * @description Updates the entire page UI based on the selected language
  * @param {string} lang - language code (en, hi, bn, etc.)
  */
+/**
+ * @description Updates the entire page UI based on the selected language
+ * @param {string} lang - language code (en, hi, bn, etc.)
+ */
 function updateLanguage(lang) {
     const t = translations[lang] || translations['en'];
 
-    const elements = {
+    updateHeroContent(t);
+    updateStepContent(t);
+    updateVotingDayContent(t);
+    updateModuleContent(t);
+    updateStaticButtons(t);
+
+    if (window.chatModule && window.chatModule.updateLangBadge) {
+        window.chatModule.updateLangBadge(lang);
+    }
+}
+
+/**
+ * @description Updates hero and main section content
+ * @param {Object} t - Translation object
+ */
+const updateHeroContent = (t) => {
+    const heroElements = {
         'hero-title': t.title,
         'hero-subtitle': t.subtitle,
         'hero-secondary': t.secondary,
@@ -762,55 +791,64 @@ function updateLanguage(lang) {
         'card-3-title': t.card3Title,
         'card-3-desc': t.card3Desc,
         'learn-title': t.learnTitle,
-        'learn-subtitle': t.learnSubtitle,
-        'step-1-title': t.step1Title,
-        'step-1-desc': t.step1Desc,
-        'step-2-title': t.step2Title,
-        'step-2-desc': t.step2Desc,
-        'step-3-title': t.step3Title,
-        'step-3-desc': t.step3Desc,
-        'step-4-title': t.step4Title,
-        'step-4-desc': t.step4Desc,
-        'step-5-title': t.step5Title,
-        'step-5-desc': t.step5Desc,
-        'step-6-title': t.step6Title,
-        'step-6-desc': t.step6Desc,
-        'step-7-title': t.step7Title,
-        'step-7-desc': t.step7Desc,
+        'learn-subtitle': t.learnSubtitle
+    };
+    applyTranslations(heroElements);
+    const cta = document.querySelector('.cta-btn');
+    if (cta && t.cta) cta.textContent = t.cta;
+};
+
+/**
+ * @description Updates the step-by-step guide content
+ * @param {Object} t - Translation object
+ */
+const updateStepContent = (t) => {
+    const stepElements = {};
+    for (let i = 1; i <= 7; i++) {
+        stepElements[`step-${i}-title`] = t[`step${i}Title`];
+        stepElements[`step-${i}-desc`] = t[`step${i}Desc`];
+        const btn = document.getElementById(`step-${i}-btn`);
+        if (btn && t.tellMeMore) btn.innerHTML = t.tellMeMore;
+    }
+    applyTranslations(stepElements);
+};
+
+/**
+ * @description Updates the voting day guide and trust sections
+ * @param {Object} t - Translation object
+ */
+const updateVotingDayContent = (t) => {
+    const vdElements = {
         'vd-title': t.vdTitle,
         'vd-guide-title': t.vdGuideTitle,
-        'bg-1-title': t.bg1Title,
-        'bg-1-desc': t.bg1Desc,
-        'bg-2-title': t.bg2Title,
-        'bg-2-desc': t.bg2Desc,
-        'bg-3-title': t.bg3Title,
-        'bg-3-desc': t.bg3Desc,
-        'bg-4-title': t.bg4Title,
-        'bg-4-desc': t.bg4Desc,
-        'bg-5-title': t.bg5Title,
-        'bg-5-desc': t.bg5Desc,
-        'bg-6-title': t.bg6Title,
-        'bg-6-desc': t.bg6Desc,
-        'bg-7-title': t.bg7Title,
-        'bg-7-desc': t.bg7Desc,
-        'bg-8-title': t.bg8Title,
-        'bg-8-desc': t.bg8Desc,
         'bg-nota-note': t.bgNotaNote,
         'evm-title': t.evmTitle,
         'evm-subtitle': t.evmSubtitle,
-        'queue-title': t.queueTitle,
-        'label-voters': t.labelVoters,
-        'label-time': t.labelTime,
-        'calc-queue-btn': t.calcQueueBtn,
         'trust-title': t.trustTitle,
         'trust-desc': t.trustDesc,
         'trust-highlight': t.trustHighlight,
         'trust-help': t.trustHelp,
         'epic-title': t.epicTitle,
         'epic-desc': t.epicDesc,
-        'epic-btn': t.epicBtn,
+        'epic-btn': t.epicBtn
+    };
+    for (let i = 1; i <= 8; i++) {
+        vdElements[`bg-${i}-title`] = t[`bg${i}Title`];
+        vdElements[`bg-${i}-desc`] = t[`bg${i}Desc`];
+    }
+    applyTranslations(vdElements);
+};
 
-        // Chat Module Elements (if exist)
+/**
+ * @description Updates Chat, Quiz, and Predictor modules
+ * @param {Object} t - Translation object
+ */
+const updateModuleContent = (t) => {
+    const moduleElements = {
+        'queue-title': t.queueTitle,
+        'label-voters': t.labelVoters,
+        'label-time': t.labelTime,
+        'calc-queue-btn': t.calcQueueBtn,
         'chat-section-title': t.askHeading,
         'chat-section-sub': t.askSub,
         'mode-simple-label': t.modeSimple,
@@ -819,22 +857,13 @@ function updateLanguage(lang) {
         'mode-simple-desc': t.modeSimpleDesc,
         'mode-genZ-desc': t.modeGenZDesc,
         'mode-classic-desc': t.modeClassicDesc,
-        'prompt-chip-1': t.prompt1,
-        'prompt-chip-2': t.prompt2,
-        'prompt-chip-3': t.prompt3,
-        'prompt-chip-4': t.prompt4,
-        'prompt-chip-5': t.prompt5,
         'chat-welcome-text': t.chatWelcome,
-
-        // Quiz Module Elements (if exist)
         'quiz-section-title': t.myHeading,
         'quiz-section-sub': t.mySub,
         'quiz-intro-title': t.quizIntroTitle,
         'quiz-intro-desc': t.quizIntroDesc,
         'quiz-complete-title': t.quizComplete,
         'download-badge-btn': t.downloadBadge,
-
-        // Predictor Module Elements (if exist)
         'predict-title': t.predictTitle,
         'predict-sub': t.predictSub,
         'label-country': t.countryLabel,
@@ -843,33 +872,38 @@ function updateLanguage(lang) {
         'label-dob': t.dobLabel,
         'predict-btn': t.predictBtn
     };
-
-    for (const [id, text] of Object.entries(elements)) {
-        const el = document.getElementById(id);
-        if (el) {
-            if (text) el.innerHTML = text;
-        }
+    for (let i = 1; i <= 5; i++) {
+        moduleElements[`prompt-chip-${i}`] = t[`prompt${i}`];
     }
-
-    const cta = document.querySelector('.cta-btn');
-    if (cta && t.cta) cta.textContent = t.cta;
+    applyTranslations(moduleElements);
 
     const chatInput = document.getElementById('chatInput');
     if (chatInput && t.chatPlaceholder) chatInput.placeholder = t.chatPlaceholder;
 
     const stateInput = document.getElementById('predict-state');
     if (stateInput && t.statePlaceholder) stateInput.placeholder = t.statePlaceholder;
+};
 
-    for (let i = 1; i <= 7; i++) {
-        const btn = document.getElementById(`step-${i}-btn`);
-        if (btn && t.tellMeMore) btn.innerHTML = t.tellMeMore;
+/**
+ * @description Helper to apply translations to a set of element IDs
+ * @param {Object} mapping - Object with element IDs as keys and translation strings as values
+ */
+const applyTranslations = (mapping) => {
+    for (const [id, text] of Object.entries(mapping)) {
+        const el = document.getElementById(id);
+        if (el && text) {
+            el.innerHTML = text;
+        }
     }
+};
 
-    // Notify modules
-    if (window.chatModule && window.chatModule.updateLangBadge) {
-        window.chatModule.updateLangBadge(lang);
-    }
-}
+/**
+ * @description Updates any remaining static buttons
+ * @param {Object} t - Translation object
+ */
+const updateStaticButtons = (t) => {
+    // Currently handled in specific update functions
+};
 
 /**
  * @description Helper to get a translation string by key

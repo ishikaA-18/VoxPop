@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const rateLimit = require('express-rate-limit');
-const { DEFAULTS, LIMITS, MODELS, PERSONALITY_LIMITS } = require('../constants');
+const { DEFAULTS, LIMITS, MODELS, PERSONALITY_LIMITS, MESSAGES, STATUS, ROLES } = require('../constants');
 const logger = require('../utils/logger');
 const { validateFields } = require('../utils/validation');
 const runWithRetry = require('../utils/ai-retry');
@@ -18,11 +18,65 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder'
 const chatLimiter = rateLimit({
     windowMs: LIMITS.CHAT_RATE_LIMIT_WINDOW,
     max: LIMITS.CHAT_RATE_LIMIT_MAX,
-    message: { error: 'Too many requests, please try again later.' }
+    message: { error: MESSAGES.ERROR_RATE_LIMIT }
 });
 
 // Cache for chat responses
 const chatCache = new Map();
+
+/**
+ * @description Generates a cache key based on message and parameters
+ * @param {string} message - The user message
+ * @param {string} country - The selected country
+ * @param {string} personalityMode - The selected personality mode
+ * @param {string} selectedLanguage - The selected language
+ * @returns {string} The cache key
+ */
+const getCacheKey = (message, country, personalityMode, selectedLanguage) => {
+    return `${message}|${country}|${personalityMode}|${selectedLanguage}`;
+};
+
+/**
+ * @description Sanitizes the user input message
+ * @param {string} message - The raw message
+ * @returns {string} The sanitized message
+ */
+const sanitizeMessage = (message) => {
+    let sanitized = message.replace(/<[^>]*>?/gm, '').trim();
+    if (sanitized.length > LIMITS.CHAT_MESSAGE_MAX_LENGTH) {
+        sanitized = sanitized.substring(0, LIMITS.CHAT_MESSAGE_MAX_LENGTH);
+    }
+    return sanitized;
+};
+
+/**
+ * @description Formats conversation history for Gemini API
+ * @param {Array} history - The raw conversation history
+ * @returns {Array} The formatted history
+ */
+const formatHistory = (history) => {
+    return history.map(msg => ({
+        role: msg.role === ROLES.BOT ? ROLES.MODEL : ROLES.USER,
+        parts: [{ text: msg.content || msg.text }]
+    }));
+};
+
+/**
+ * @description Interacts with the AI model to get a response
+ * @param {string} message - Sanitized user message
+ * @param {string} systemPrompt - The system instruction prompt
+ * @param {Array} formattedHistory - The formatted history array
+ * @returns {Promise<string>} The AI generated reply
+ */
+const getAIResponse = async (message, systemPrompt, formattedHistory) => {
+    const model = genAI.getGenerativeModel(
+        { model: MODELS.CHAT_MODEL, systemInstruction: systemPrompt },
+        { apiVersion: 'v1beta' }
+    );
+    const chat = model.startChat({ history: formattedHistory });
+    const result = await runWithRetry(() => chat.sendMessage(message));
+    return result.response.text();
+};
 
 /**
  * @description POST /api/chat - Handles AI chat interactions
@@ -40,54 +94,30 @@ router.post('/', chatLimiter, validateFields(['message']), async (req, res) => {
             selectedLanguage = DEFAULTS.LANGUAGE
         } = req.body;
 
-        // Check cache
-        const cacheKey = `${message}|${country}|${personalityMode}|${selectedLanguage}`;
+        const cacheKey = getCacheKey(message, country, personalityMode, selectedLanguage);
         const cachedResponse = chatCache.get(cacheKey);
+
         if (cachedResponse && (Date.now() - cachedResponse.timestamp < LIMITS.CACHE_TTL)) {
             logger.info('Serving from cache:', cacheKey);
             return res.json({ reply: cachedResponse.reply, cached: true });
         }
 
-        let sanitizedMessage = message.replace(/<[^>]*>?/gm, '').trim();
-
-        if (sanitizedMessage.length === 0) {
-            return res.status(400).json({
-                error: 'Message content is invalid or empty after sanitization.',
+        const sanitized = sanitizeMessage(message);
+        if (sanitized.length === 0) {
+            return res.status(STATUS.BAD_REQUEST).json({
+                error: MESSAGES.ERROR_INVALID_MESSAGE,
                 field: 'message'
             });
         }
 
-        if (sanitizedMessage.length > LIMITS.CHAT_MESSAGE_MAX_LENGTH) {
-            sanitizedMessage = sanitizedMessage.substring(0, LIMITS.CHAT_MESSAGE_MAX_LENGTH);
-        }
-
         const systemPrompt = CHAT_SYSTEM_PROMPT(
-            selectedLanguage,
-            personalityMode,
-            country,
-            electionType,
-            PERSONALITY_LIMITS.genZ,
-            PERSONALITY_LIMITS.classic,
-            PERSONALITY_LIMITS.simple
+            selectedLanguage, personalityMode, country, electionType,
+            PERSONALITY_LIMITS.genZ, PERSONALITY_LIMITS.classic, PERSONALITY_LIMITS.simple
         );
 
-        const model = genAI.getGenerativeModel(
-            { model: MODELS.CHAT_MODEL, systemInstruction: systemPrompt },
-            { apiVersion: 'v1beta' }
-        );
+        const reply = await getAIResponse(sanitized, systemPrompt, formatHistory(conversationHistory));
 
-        const formattedHistory = conversationHistory.map(msg => ({
-            role: msg.role === 'bot' ? 'model' : 'user',
-            parts: [{ text: msg.content || msg.text }]
-        }));
-
-        const chat = model.startChat({ history: formattedHistory });
-        const result = await runWithRetry(() => chat.sendMessage(sanitizedMessage));
-        const reply = result.response.text();
-
-        // Store in cache
         chatCache.set(cacheKey, { reply, timestamp: Date.now() });
-
         res.json({ reply });
     } catch (error) {
         logger.error('Chat error:', error);

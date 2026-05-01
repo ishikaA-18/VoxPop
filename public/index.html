@@ -22,6 +22,9 @@
 </head>
 
 <body>
+    <!-- Skip Navigation Link (accessibility) -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <nav aria-label="Main Navigation">
         <div class="nav-container">
             <a href="#home" class="logo" aria-label="VoxPop Home">
@@ -47,7 +50,7 @@
         </div>
     </nav>
 
-    <main>
+    <main id="main-content" role="main">
         <section id="home" class="hero-section">
             <div class="particle-background" aria-hidden="true"></div>
 
@@ -59,9 +62,9 @@
 
                 <div class="selectors-container">
                     <div class="selector-group">
-                        <label for="language-select" class="visually-hidden">Choose your language</label>
+                        <label for="language-select">Choose your language</label>
                         <span class="flag-icon" aria-hidden="true" id="language-flag">🇮🇳</span>
-                        <select id="language-select" aria-label="Choose your language">
+                        <select id="language-select">
                             <option value="en" selected>English</option>
                             <option value="hi">Hindi (हिन्दी)</option>
                             <option value="bn">Bengali (বাংলা)</option>
@@ -88,8 +91,8 @@
                     </div>
 
                     <div class="selector-group">
-                        <label for="country-select" class="visually-hidden">Choose your country</label>
-                        <select id="country-select" aria-label="Choose your country">
+                        <label for="country-select">Choose your country</label>
+                        <select id="country-select">
                             <option value="in" selected>India</option>
                             <option value="us">USA</option>
                             <option value="uk">UK</option>
@@ -102,8 +105,8 @@
                     </div>
 
                     <div class="selector-group" id="election-type-group">
-                        <label for="election-select" class="visually-hidden">Choose election type</label>
-                        <select id="election-select" aria-label="Choose election type">
+                        <label for="election-select">Choose election type</label>
+                        <select id="election-select">
                             <option value="lok-sabha">Lok Sabha</option>
                             <option value="state-assembly">State Assembly</option>
                             <option value="presidential">Presidential</option>
@@ -296,7 +299,20 @@
                 EVM."</p>
 
             <!-- Component 2: EVM Simulator -->
-            <div id="evm-simulator-wrapper" class="evm-section">
+            <!-- Hidden description for screen readers -->
+            <p id="evm-simulator-desc" class="visually-hidden">
+                Interactive EVM (Electronic Voting Machine) simulator. Select a candidate by pressing their blue button.
+                A red LED will light up and a beep will sound to confirm your vote. The VVPAT panel will display a
+                paper slip showing your chosen candidate for 7 seconds before it drops into a sealed box.
+                Press the Reset Simulator button to try again.
+            </p>
+            <div
+                id="evm-simulator-wrapper"
+                class="evm-section"
+                role="region"
+                aria-labelledby="evm-title"
+                aria-describedby="evm-simulator-desc"
+            >
                 <h3 id="evm-title" class="subsection-title">Try it yourself — this is exactly how it works at the booth
                     🗳️</h3>
                 <p id="evm-subtitle" class="section-subtitle">In the real EVM, a RED light glows and a beep confirms
@@ -372,8 +388,11 @@
                             <li>Apply for Voter ID correction</li>
                             <li>Apply for shifting within constituency</li>
                         </ul>
-                        <a href="https://voters.eci.gov.in" target="_blank" class="btn btn-primary epic-btn"
-                            id="epic-btn">Check yours at voters.eci.gov.in &rarr;</a>
+                        <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer"
+                            class="btn btn-primary epic-btn" id="epic-btn"
+                            aria-label="Check your EPIC number at voters.eci.gov.in (opens in new tab)">
+                            Check yours at voters.eci.gov.in &rarr;
+                        </a>
                     </div>
                 </div>
             </div>

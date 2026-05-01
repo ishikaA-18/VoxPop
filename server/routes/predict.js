@@ -5,7 +5,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { DEFAULTS, MODELS } = require('../constants');
+const { DEFAULTS, MODELS, MESSAGES, STATUS } = require('../constants');
 const logger = require('../utils/logger');
 const { validateFields } = require('../utils/validation');
 const runWithRetry = require('../utils/ai-retry');
@@ -14,53 +14,112 @@ const runWithRetry = require('../utils/ai-retry');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'placeholder');
 
 /**
+ * @description Loads known elections from the JSON data file
+ * @returns {Array} Array of known elections
+ */
+const loadKnownElections = () => {
+    try {
+        const dataPath = path.join(__dirname, '../../data/elections.json');
+        if (!fs.existsSync(dataPath)) return [];
+        const fileData = fs.readFileSync(dataPath, 'utf8');
+        return JSON.parse(fileData).elections || [];
+    } catch (err) {
+        logger.error('Error reading elections.json', err);
+        return [];
+    }
+};
+
+/**
+ * @description Finds a matching election from known data
+ * @param {Array} elections - List of known elections
+ * @param {string} country - The country name
+ * @param {string} electionType - The type of election
+ * @param {string} state - The state name (optional)
+ * @returns {Object|null} Matching election object or null
+ */
+const findKnownMatch = (elections, country, electionType, state) => {
+    const c = (country || '').toLowerCase();
+    const t = (electionType || '').toLowerCase();
+    const s = (state || '').toLowerCase();
+
+    // Prefer exact state match
+    let match = elections.find(e =>
+        e.country.toLowerCase() === c &&
+        e.type.toLowerCase() === t &&
+        e.state && e.state.toLowerCase() === s
+    );
+
+    // fallback to country-wide match
+    if (!match) {
+        match = elections.find(e =>
+            e.country.toLowerCase() === c &&
+            e.type.toLowerCase() === t &&
+            !e.state
+        );
+    }
+    return match;
+};
+
+/**
+ * @description Checks voter eligibility based on voter card date
+ * @param {string} voterCardDate - The date on the voter card
+ * @returns {boolean} Whether the user is likely eligible
+ */
+const checkEligibility = (voterCardDate) => {
+    if (!voterCardDate) return true;
+    const currentYear = new Date().getFullYear();
+    const voterYear = new Date(voterCardDate).getFullYear();
+    return (currentYear - voterYear >= 18);
+};
+
+/**
+ * @description Interacts with AI to estimate an election date
+ * @param {string} country - The country
+ * @param {string} electionType - The type of election
+ * @param {string} state - The state (optional)
+ * @returns {Promise<Object>} Estimated prediction object
+ */
+const fetchAIPrediction = async (country, electionType, state) => {
+    const prompt = `Estimate the next ${electionType} election date for ${state ? state + ', ' : ''}${country}. 
+Respond with ONLY a valid JSON object in this exact format:
+{
+  "nextElectionDate": "Month Year or Year",
+  "electionName": "Name of the election",
+  "whatVotingFor": "Brief description of what is being voted for",
+  "isHappeningNow": boolean
+}
+Do not include any markdown formatting, backticks, or other text.`;
+
+    const model = genAI.getGenerativeModel({ model: MODELS.PREDICT_MODEL }, { apiVersion: 'v1beta' });
+    const result = await runWithRetry(() => model.generateContent(prompt));
+    const responseText = result.response.text();
+
+    try {
+        const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(cleanJson);
+    } catch (e) {
+        logger.error('Failed to parse Gemini prediction JSON:', e);
+        return {
+            nextElectionDate: "Unknown",
+            electionName: electionType,
+            whatVotingFor: "Representatives",
+            isHappeningNow: false
+        };
+    }
+};
+
+/**
  * @description POST /api/predict - Predicts the next election date for a given location
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
 router.post('/', validateFields(['country', 'electionType']), async (req, res) => {
     try {
-        const {
-            country,
-            state,
-            voterCardDate,
-            electionType = DEFAULTS.ELECTION_TYPE
-        } = req.body;
-
-        let knownElections = [];
-        try {
-            const dataPath = path.join(__dirname, '../../data/elections.json');
-            const fileData = fs.readFileSync(dataPath, 'utf8');
-            knownElections = JSON.parse(fileData).elections || [];
-        } catch (err) {
-            logger.error('Error reading elections.json', err);
-        }
-
-        // Try to find a known election (prefer exact state match if state is provided)
-        let knownMatch = knownElections.find(e =>
-            e.country.toLowerCase() === (country || '').toLowerCase() &&
-            e.type.toLowerCase() === (electionType || '').toLowerCase() &&
-            e.state && e.state.toLowerCase() === (state || '').toLowerCase()
-        );
-
-        // If no state match, look for country-wide match
-        if (!knownMatch) {
-            knownMatch = knownElections.find(e =>
-                e.country.toLowerCase() === (country || '').toLowerCase() &&
-                e.type.toLowerCase() === (electionType || '').toLowerCase() &&
-                !e.state
-            );
-        }
-
+        const { country, state, voterCardDate, electionType = DEFAULTS.ELECTION_TYPE } = req.body;
         const currentYear = new Date().getFullYear();
-        let isEligible = true;
-
-        if (voterCardDate) {
-            const voterYear = new Date(voterCardDate).getFullYear();
-            if (currentYear - voterYear < 18) {
-                isEligible = false;
-            }
-        }
+        const knownElections = loadKnownElections();
+        const knownMatch = findKnownMatch(knownElections, country, electionType, state);
+        const isEligible = checkEligibility(voterCardDate);
 
         if (knownMatch) {
             return res.json({
@@ -73,35 +132,7 @@ router.post('/', validateFields(['country', 'electionType']), async (req, res) =
             });
         }
 
-        // If not found, use Gemini to estimate
-        const prompt = `Estimate the next ${electionType} election date for ${state ? state + ', ' : ''}${country}. 
-Respond with ONLY a valid JSON object in this exact format:
-{
-  "nextElectionDate": "Month Year or Year",
-  "electionName": "Name of the election",
-  "whatVotingFor": "Brief description of what is being voted for",
-  "isHappeningNow": boolean
-}
-Do not include any markdown formatting, backticks, or other text.`;
-
-        const model = genAI.getGenerativeModel({ model: MODELS.PREDICT_MODEL }, { apiVersion: 'v1beta' });
-        const result = await runWithRetry(() => model.generateContent(prompt));
-        let responseText = result.response.text();
-
-        let prediction;
-        try {
-            let cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-            prediction = JSON.parse(cleanJson);
-        } catch (e) {
-            logger.error('Failed to parse Gemini prediction JSON:', e);
-            prediction = {
-                nextElectionDate: "Unknown",
-                electionName: electionType,
-                whatVotingFor: "Representatives",
-                isHappeningNow: false
-            };
-        }
-
+        const prediction = await fetchAIPrediction(country, electionType, state);
         res.json({
             ...prediction,
             isEligible,
@@ -116,7 +147,7 @@ Do not include any markdown formatting, backticks, or other text.`;
             whatVotingFor: "Democratic Representatives",
             isHappeningNow: false,
             isEligible: true,
-            disclaimer: "We're currently having trouble connecting to our AI. Please check the official Election Commission website for the most accurate dates."
+            disclaimer: MESSAGES.ERROR_INTERNAL
         });
     }
 });
